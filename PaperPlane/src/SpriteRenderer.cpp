@@ -13,7 +13,6 @@ void SpriteRenderer::DrawLine(glm::vec3 location, glm::vec3 startPos, glm::vec3 
 	this->shader.setVec3("lineColor", color);
 
 	glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
-	//glm::mat4 projection = glm::ortho(0.0f, 720.0f, 720.0f, 0.0f, 0.1f, 100.0f);
 	this->shader.setMat4("projection", projection);
 	
 	glm::mat4 view = camera.GetViewMatrix();
@@ -23,17 +22,17 @@ void SpriteRenderer::DrawLine(glm::vec3 location, glm::vec3 startPos, glm::vec3 
 	model = glm::translate(model, location);
 	this->shader.setMat4("model", model);
 
-	unsigned int VBO, VAO;
+	unsigned int lineVAO, lineVBO;
 	int vertices[] = {
 		startPos.x, startPos.y, startPos.z,
 		endPos.x, endPos.y, endPos.z
 	};
 
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
+	glGenVertexArrays(1, &lineVBO);
+	glGenBuffers(1, &lineVAO);
 
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindVertexArray(lineVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, lineVAO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
@@ -44,6 +43,9 @@ void SpriteRenderer::DrawLine(glm::vec3 location, glm::vec3 startPos, glm::vec3 
 	glDisableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	glDeleteVertexArrays(1, &lineVAO);
+	glDeleteBuffers(1, &lineVBO);
 }
 
 void SpriteRenderer::DrawBlock(glm::vec3 pos, float width, float height, float depth, glm::vec3 color, Camera& camera)
@@ -53,7 +55,6 @@ void SpriteRenderer::DrawBlock(glm::vec3 pos, float width, float height, float d
 	this->shader.setVec3("blockColor", color);
 
 	glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
-	//glm::mat4 projection = glm::ortho(0.0f, 720.0f, 720.0f, 0.0f, 0.1f, 100.0f);
 	this->shader.setMat4("projection", projection);
 
 	glm::mat4 view = camera.GetViewMatrix();
@@ -109,6 +110,8 @@ void SpriteRenderer::DrawBlock(glm::vec3 pos, float width, float height, float d
 		-width,  height,  depth   // bottom-left        
 	};
 
+	//std::cout << "block: " << sizeof(blockVertices) << std::endl;
+
 	glGenVertexArrays(1, &blockVAO);
 	glGenBuffers(1, &blockVBO);
 
@@ -124,4 +127,7 @@ void SpriteRenderer::DrawBlock(glm::vec3 pos, float width, float height, float d
 	glDisableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	glDeleteVertexArrays(1, &blockVAO);
+	glDeleteBuffers(1, &blockVBO);
 }

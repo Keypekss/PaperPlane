@@ -19,7 +19,7 @@
 #include "Camera.h"
 #include "Material.h"
 #include "Model.h"
-#include "Room.h"
+#include "Game.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -46,9 +46,6 @@ float lastFrame = 0.0f;
 
 // define models
 Model paperPlane = Model(glm::vec3(0.0f), glm::vec3(1.0f), false);
-
-// room
-Room room = Room();
 
 // ImGUI state
 // ----------------------------------------------	
@@ -103,17 +100,21 @@ int main()
 	Shader skyboxShader("Shaders/skybox.vert", "Shaders/skybox.frag");
 
 	// load models
-	//paperPlane.loadModel("Resources/Models/plane_mode/scene.gltf");
+	paperPlane.loadModel("Resources/Models/plane_mode/scene.gltf");
 
 	glEnable(GL_DEPTH_TEST);
+
+	// game
+	Game paperPlaneGame = Game();
+	paperPlaneGame.Init();
 
 	//render loop
 	while (!glfwWindowShouldClose(mainWindow)) {
 
 		// start ImGUI
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+// 		ImGui_ImplOpenGL3_NewFrame();
+// 		ImGui_ImplGlfw_NewFrame();
+// 		ImGui::NewFrame();
 
 		// per-frame time logic
 		float currentFrame = glfwGetTime();
@@ -126,33 +127,32 @@ int main()
 		glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		drawPaperPlane(modelShader);
+		//drawPaperPlane(modelShader);
 		//drawSkybox(skyboxShader);	
-		room.DrawDebugCube(camera);
+		paperPlaneGame.GenerateRooms(camera);
 
 		// ImGui
 		// ----------------------------------------------	
-		{
-			ImGui::Begin("Transformations");                          // Create a window called "Hello, world!" and append into it.
-						
-			// translate mirror
-			ImGui::SliderFloat3("PaperPlane ", glm::value_ptr(PTranslate), -25.0f, 25.0f);
-
-			// translate camera
-			ImGui::SliderFloat3("CTranslate ", glm::value_ptr(CTranslate), -25.0f, 25.0f);
-			ImGui::SliderFloat("CRotYaw ", &CRotYaw, -90.0f, 90.0f);
-			ImGui::SliderFloat("CRotPitch ", &CRotPitch, -90.0f, 90.0f);
-			
-
-			ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color			
-
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			ImGui::End();
-		}
-
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+// 		{
+// 			ImGui::Begin("Transformations");                          // Create a window called "Hello, world!" and append into it.
+// 						
+// 			// translate mirror
+// 			ImGui::SliderFloat3("PaperPlane ", glm::value_ptr(PTranslate), -25.0f, 25.0f);
+// 
+// 			// translate camera
+// 			ImGui::SliderFloat3("CTranslate ", glm::value_ptr(CTranslate), -25.0f, 25.0f);
+// 			ImGui::SliderFloat("CRotYaw ", &CRotYaw, -90.0f, 90.0f);
+// 			ImGui::SliderFloat("CRotPitch ", &CRotPitch, -90.0f, 90.0f);
+// 			
+// 
+// 			ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color			
+// 
+// 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+// 			ImGui::End();
+// 		}
+// 
+// 		ImGui::Render();
+// 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(mainWindow);
 		glfwPollEvents();
@@ -278,7 +278,7 @@ void drawPaperPlane(Shader &modelShader)
 		modelShader.use();
 
 		// set model uniforms			
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 90.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 		modelShader.setMat4("projection", projection);
 		modelShader.setMat4("view", view);
