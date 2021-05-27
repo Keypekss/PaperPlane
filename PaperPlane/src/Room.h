@@ -12,6 +12,10 @@ public:
 
 	void DrawDebugCube(SpriteRenderer& lineRenderer, SpriteRenderer& blockRenderer, Camera &camera);
 	void GenerateRoom(unsigned int difficulty);
+
+	// getters
+	glm::vec3 GetPos();
+	int GetDepth();
 	
 	~Room();
 private:

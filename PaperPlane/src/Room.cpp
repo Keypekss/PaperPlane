@@ -64,6 +64,16 @@ void Room::GenerateRoom(unsigned int difficulty)
 	}
 }
 
+glm::vec3 Room::GetPos()
+{
+	return RPos;
+}
+
+int Room::GetDepth()
+{
+	return RDepth;
+}
+
 Room::~Room()
 = default;
 

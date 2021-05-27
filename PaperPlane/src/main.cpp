@@ -133,6 +133,7 @@ int main()
 		drawPaperPlane(modelShader);
 		drawSkybox(skyboxShader);	
 		paperPlaneGame.GenerateRooms(camera);
+		paperPlaneGame.RemoveRoom(camera);
 
 		// ImGui
 		// ----------------------------------------------	

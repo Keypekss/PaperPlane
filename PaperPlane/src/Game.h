@@ -7,7 +7,6 @@
 #include "Room.h"
 
 // initial player values
-const float PLAYER_VELOCITY(100.0f);
 
 class Game {
 public:
@@ -15,6 +14,7 @@ public:
 
 	void Init();
 	void GenerateRooms(Camera &camera);
+	void RemoveRoom(Camera &camera);
 
 	~Game();
 
