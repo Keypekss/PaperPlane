@@ -25,16 +25,19 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, float dt);
 unsigned int loadCubemap(std::vector<std::string> faces);
 void drawPaperPlane(Shader &modelShader);
 void drawSkybox(Shader& skyboxShader);
 
 const unsigned int SCR_WIDTH = 1280, SCR_HEIGHT = 720;
 
+// player defaults
+float velocity = 10.0f;
+
 // camera
 //Camera camera = Camera(glm::vec3(-1.1f, 3.0f, 9.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, -15.0f);
-Camera camera = Camera(glm::vec3(-1.0f, 0.6f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
+Camera camera = Camera(glm::vec3(4.2f, 4.7f, 13.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -89,11 +92,11 @@ int main()
 	}
 
 	// initialize ImGUI
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
-	ImGui::StyleColorsDark();
-	ImGui_ImplOpenGL3_Init((char*)glGetString(330));
+// 	IMGUI_CHECKVERSION();
+// 	ImGui::CreateContext();
+// 	ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
+// 	ImGui::StyleColorsDark();
+// 	ImGui_ImplOpenGL3_Init((char*)glGetString(330));
 
 	// load shaders
 	Shader modelShader("Shaders/modelShader.vert", "Shaders/modelShader.frag");
@@ -122,30 +125,24 @@ int main()
 		lastFrame = currentFrame;
 
 		// input
-		processInput(mainWindow);		
+		processInput(mainWindow, deltaTime);		
 
 		glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//drawPaperPlane(modelShader);
-		//drawSkybox(skyboxShader);	
+		drawPaperPlane(modelShader);
+		drawSkybox(skyboxShader);	
 		paperPlaneGame.GenerateRooms(camera);
 
 		// ImGui
 		// ----------------------------------------------	
 // 		{
-// 			ImGui::Begin("Transformations");                          // Create a window called "Hello, world!" and append into it.
+// 			ImGui::Begin("Transformations");
 // 						
-// 			// translate mirror
-// 			ImGui::SliderFloat3("PaperPlane ", glm::value_ptr(PTranslate), -25.0f, 25.0f);
-// 
 // 			// translate camera
 // 			ImGui::SliderFloat3("CTranslate ", glm::value_ptr(CTranslate), -25.0f, 25.0f);
 // 			ImGui::SliderFloat("CRotYaw ", &CRotYaw, -90.0f, 90.0f);
 // 			ImGui::SliderFloat("CRotPitch ", &CRotPitch, -90.0f, 90.0f);
-// 			
-// 
-// 			ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color			
 // 
 // 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 // 			ImGui::End();
@@ -159,11 +156,9 @@ int main()
 	}
 
 	// shutdown ImGUI
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
-	//deallocate all resources
+// 	ImGui_ImplOpenGL3_Shutdown();
+// 	ImGui_ImplGlfw_Shutdown();
+// 	ImGui::DestroyContext();
 
 	glfwTerminate();
 	return 0;
@@ -171,23 +166,48 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
+void processInput(GLFWwindow *window, float dt)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	// plane controls
+	PTranslate.y -= 5.0f * dt;
+	camera.Position.z -= 5.0f * dt;
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		PTranslate.z += 5.0f * dt;
+		camera.Position.y += 5.0f * dt;
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		PTranslate.z -= 5.0f * dt;
+		camera.Position.y -= 5.0f * dt;
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		PTranslate.x += 5.0f * dt;
+		camera.Position.x -= 5.0f * dt;
+	}
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		PTranslate.x -= 5.0f * dt;
+		camera.Position.x += 5.0f * dt;
+	}
+
+	// camera free control for debugging
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		camera.ProcessKeyboard(FORWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		camera.ProcessKeyboard(BACKWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		camera.ProcessKeyboard(LEFT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		camera.ProcessKeyboard(RIGHT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-		camera.ProcessKeyboard(UP, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-		camera.ProcessKeyboard(DOWN, deltaTime);
+	}
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -286,9 +306,9 @@ void drawPaperPlane(Shader &modelShader)
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::translate(model, glm::vec3(1.5f, 0.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(-4.5f, 9.0f, 3.6f));
 		model = glm::translate(model, PTranslate);
-		model = glm::scale(model, glm::vec3(0.02f));
+		model = glm::scale(model, glm::vec3(0.01f));
 		modelShader.setMat4("model", model);
 
 		paperPlane.render(modelShader, false);	

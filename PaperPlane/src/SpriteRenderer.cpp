@@ -12,7 +12,7 @@ void SpriteRenderer::DrawLine(glm::vec3 location, glm::vec3 startPos, glm::vec3 
 
 	this->shader.setVec3("lineColor", color);
 
-	glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
 	this->shader.setMat4("projection", projection);
 	
 	glm::mat4 view = camera.GetViewMatrix();
@@ -54,7 +54,7 @@ void SpriteRenderer::DrawBlock(glm::vec3 pos, float width, float height, float d
 
 	this->shader.setVec3("blockColor", color);
 
-	glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
 	this->shader.setMat4("projection", projection);
 
 	glm::mat4 view = camera.GetViewMatrix();
