@@ -688,6 +688,8 @@
     <None Include="Shaders\line.vert" />
     <None Include="Shaders\modelShader.frag" />
     <None Include="Shaders\modelShader.vert" />
+    <None Include="Shaders\silhouette.frag" />
+    <None Include="Shaders\silhouette.vert" />
     <None Include="Shaders\skybox.frag" />
     <None Include="Shaders\skybox.vert" />
   </ItemGroup>

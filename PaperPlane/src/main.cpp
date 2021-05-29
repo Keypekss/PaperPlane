@@ -29,6 +29,7 @@ void processInput(GLFWwindow *window, float dt);
 unsigned int loadCubemap(std::vector<std::string> faces);
 void drawPaperPlane(Shader &modelShader);
 void drawSkybox(Shader& skyboxShader);
+void drawSilhouette(Shader& silhouetteShader); 
 
 const unsigned int SCR_WIDTH = 1280, SCR_HEIGHT = 720;
 
@@ -101,11 +102,17 @@ int main()
 	// load shaders
 	Shader modelShader("Shaders/modelShader.vert", "Shaders/modelShader.frag");
 	Shader skyboxShader("Shaders/skybox.vert", "Shaders/skybox.frag");
+	Shader silhouetteShader("Shaders/silhouette.vert", "Shaders/silhouette.frag");
 
 	// load models
 	paperPlane.loadModel("Resources/Models/plane_mode/scene.gltf");
 
+	// global openGL state
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
 
 	// game
 	Game paperPlaneGame = Game();
@@ -128,13 +135,12 @@ int main()
 		processInput(mainWindow, deltaTime);		
 
 		glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		drawPaperPlane(modelShader);
-		drawSkybox(skyboxShader);	
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);		
+		drawSkybox(skyboxShader);		
 		paperPlaneGame.GenerateRooms(camera);
 		paperPlaneGame.RemoveRoom(camera);
-
+		drawPaperPlane(modelShader);
+		drawSilhouette(silhouetteShader);
 		// ImGui
 		// ----------------------------------------------	
 // 		{
@@ -303,7 +309,9 @@ void drawPaperPlane(Shader &modelShader)
 		glm::mat4 view = camera.GetViewMatrix();
 		modelShader.setMat4("projection", projection);
 		modelShader.setMat4("view", view);
-		// draw paperPlane
+		// draw paperPlane as normal, writing to the stencil buffer
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -404,4 +412,36 @@ void drawSkybox(Shader &skyboxShader)
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 	glDepthFunc(GL_LESS);
+}
+
+void drawSilhouette(Shader& silhouetteShader)
+{
+	// set uniforms
+	silhouetteShader.use();
+	
+	glm::mat4 view = camera.GetViewMatrix();
+	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 90.0f);
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(-4.5f, 9.0f, 3.6f));
+	model = glm::translate(model, PTranslate);
+	model = glm::scale(model, glm::vec3(0.01f));
+
+	silhouetteShader.setMat4("model", model);
+	silhouetteShader.setMat4("view", view);
+	silhouetteShader.setMat4("projection", projection);
+
+	// draw slightly scaled versions of the plane, this time disabling stencil writing.
+	// Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing 
+	// the objects' size differences, making it look like borders.
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilMask(0x00);
+	glDisable(GL_DEPTH_TEST);
+
+	paperPlane.render(silhouetteShader, false);
+
+	glStencilMask(0xFF);
+	glStencilFunc(GL_ALWAYS, 0, 0xFF);
+	glEnable(GL_DEPTH_TEST);
 }

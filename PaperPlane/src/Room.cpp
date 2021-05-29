@@ -71,7 +71,7 @@ glm::vec3 Room::GetPos()
 
 int Room::GetDepth()
 {
-	return RDepth;
+	return RDepth;	
 }
 
 Room::~Room()

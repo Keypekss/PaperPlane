@@ -31,30 +31,6 @@ void Game::GenerateRooms(Camera &camera)
 		Rooms.push_back(room);
 	}
 
-// 	while (Rooms.size() != RoomCount) {
-// 		if (Rooms.size() == 0) {
-// 			Room room{ glm::vec3(0.0f) };
-// 			room.GenerateRoom(18);
-// 			Rooms.push_back(room);
-// 		} else if (Rooms.size() == 1) {
-// 			Room room{ glm::vec3(0.0f, 0.0f, -18.0f) };
-// 			room.GenerateRoom(18);
-// 			Rooms.push_back(room);
-// 		} else if (Rooms.size() == 2) {
-// 			Room room{ glm::vec3(0.0f, 0.0f, -36.0f) };
-// 			room.GenerateRoom(18);
-// 			Rooms.push_back(room);
-// 		} else if (Rooms.size() == 3) {
-// 			Room room{ glm::vec3(0.0f, 0.0f, -54.0f) };
-// 			room.GenerateRoom(18);
-// 			Rooms.push_back(room);
-// 		} else if (Rooms.size() == 4) {
-// 			Room room{ glm::vec3(0.0f, 0.0f, -72.0f) };
-// 			room.GenerateRoom(18);
-// 			Rooms.push_back(room);
-// 		}
-// 	}
-
 	for (auto & Room : Rooms) {
 		Room.DrawDebugCube(*LineRenderer, *BlockRenderer ,camera);
 	}

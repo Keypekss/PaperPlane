@@ -1668,6 +1668,8 @@
     <None Include="Shaders\line.frag" />
     <None Include="Shaders\block.vert" />
     <None Include="Shaders\block.frag" />
+    <None Include="Shaders\silhouette.vert" />
+    <None Include="Shaders\silhouette.frag" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\GLFW\lib-vc2017\glfw3dll.lib" />
