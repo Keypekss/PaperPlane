@@ -138,6 +138,7 @@
     <ClCompile Include="Dependencies\IMGUI\IMGUI\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Dependencies\IMGUI\IMGUI\imgui_tables.cpp" />
     <ClCompile Include="Dependencies\IMGUI\IMGUI\imgui_widgets.cpp" />
+    <ClCompile Include="src\Plane.cpp" />
     <ClCompile Include="src\Block.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\SpriteRenderer.cpp" />
@@ -522,6 +523,7 @@
     <ClInclude Include="Dependencies\IMGUI\IMGUI\imstb_rectpack.h" />
     <ClInclude Include="Dependencies\IMGUI\IMGUI\imstb_textedit.h" />
     <ClInclude Include="Dependencies\IMGUI\IMGUI\imstb_truetype.h" />
+    <ClInclude Include="src\Plane.h" />
     <ClInclude Include="src\Block.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\SpriteRenderer.h" />

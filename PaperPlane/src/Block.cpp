@@ -9,7 +9,7 @@ Block::Block()
 
 void Block::DrawBlock(SpriteRenderer& blockRenderer, Camera &camera)
 {
-	blockRenderer.DrawBlock(BPos, BWidth, BHeight, BDepth, BColor, camera);
+	blockRenderer.DrawBlock(BPos, BWidth, BHeight, BDepth, BColor, camera);	
 }
 
 void Block::GenerateBlock(glm::vec3 pos)
@@ -90,6 +90,33 @@ void Block::RandomizeDepth(glm::vec3 pos)
 		BColor = glm::vec3(0.0f, 1.0f, 0.0f);
 		BPos.z = pos.z - 16.0f;
 		break;
+	}
+}
+
+void Block::DrawDebugLines(SpriteRenderer& lineRenderer, Camera& camera)
+{
+	std::vector<std::vector<glm::vec3>> vertices{
+		// first point								// second point
+		{glm::vec3(0,		0,			0),			glm::vec3(BWidth,	0,			0)}, // front
+		{glm::vec3(0,		0,			0),			glm::vec3(0,		BHeight,	0)},
+		{glm::vec3(0,		BHeight,	0),			glm::vec3(BWidth,	BHeight,	0)},
+		{glm::vec3(BWidth,	BHeight,	0),			glm::vec3(BWidth,	0,			0)},
+
+		{glm::vec3(0,		0,			0),			glm::vec3(0,		0,			-BDepth)}, // sides
+		{glm::vec3(0,		BHeight,	0),			glm::vec3(0,		BHeight,	-BDepth)},
+		{glm::vec3(BWidth,	BHeight,	0),			glm::vec3(BWidth,	BHeight,	-BDepth)},
+		{glm::vec3(BWidth,	0,			0),			glm::vec3(BWidth,	0,			-BDepth)},
+
+		{glm::vec3(0,		0,			-BDepth),	glm::vec3(BWidth,	0,			-BDepth)}, // back
+		{glm::vec3(0,		0,			-BDepth),	glm::vec3(0,		BHeight,	-BDepth)},
+		{glm::vec3(0,		BHeight,	-BDepth),	glm::vec3(BWidth,	BHeight,	-BDepth)},
+		{glm::vec3(BWidth,	BHeight,	-BDepth),	glm::vec3(BWidth,	0,			-BDepth)}
+	};
+
+	for (size_t i = 0; i < vertices.size(); i++) {
+		glm::vec3 startPos = vertices.at(i).at(0);
+		glm::vec3 endPos = vertices.at(i).at(1);
+		lineRenderer.DrawLine(BPos, startPos, endPos, glm::vec3(0.5f, 0.5f, 0.5f), camera);
 	}
 }
 

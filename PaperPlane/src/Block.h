@@ -8,6 +8,7 @@ public:
 	Block();	
 
 	void DrawBlock(SpriteRenderer& blockRenderer, Camera &camera);
+	void DrawDebugLines(SpriteRenderer& lineRenderer, Camera& camera);
 	void GenerateBlock(glm::vec3 pos);
 
 	// getters

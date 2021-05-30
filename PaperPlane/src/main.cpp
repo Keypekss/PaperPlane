@@ -17,9 +17,8 @@
 
 #include "Shader.h"
 #include "Camera.h"
-#include "Material.h"
-#include "Model.h"
 #include "Game.h"
+#include "Plane.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -27,17 +26,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window, float dt);
 unsigned int loadCubemap(std::vector<std::string> faces);
-void drawPaperPlane(Shader &modelShader);
 void drawSkybox(Shader& skyboxShader);
-void drawSilhouette(Shader& silhouetteShader); 
 
 const unsigned int SCR_WIDTH = 1280, SCR_HEIGHT = 720;
 
-// player defaults
-float velocity = 10.0f;
-
 // camera
-//Camera camera = Camera(glm::vec3(-1.1f, 3.0f, 9.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, -15.0f);
 Camera camera = Camera(glm::vec3(4.2f, 4.7f, 13.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -48,8 +41,8 @@ bool enableCameraMovement = false;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-// define models
-Model paperPlane = Model(glm::vec3(0.0f), glm::vec3(1.0f), false);
+//keys
+bool Keys[1024];
 
 // ImGUI state
 // ----------------------------------------------	
@@ -63,6 +56,8 @@ float		CRotYaw		= 0.0f;
 float		CRotPitch	= 0.0f;
 glm::vec3	CTranslate	= glm::vec3(0.0f);
 
+// game
+Game planeGame = Game();
 
 int main()
 {
@@ -100,12 +95,7 @@ int main()
 // 	ImGui_ImplOpenGL3_Init((char*)glGetString(330));
 
 	// load shaders
-	Shader modelShader("Shaders/modelShader.vert", "Shaders/modelShader.frag");
 	Shader skyboxShader("Shaders/skybox.vert", "Shaders/skybox.frag");
-	Shader silhouetteShader("Shaders/silhouette.vert", "Shaders/silhouette.frag");
-
-	// load models
-	paperPlane.loadModel("Resources/Models/plane_mode/scene.gltf");
 
 	// global openGL state
 	glEnable(GL_DEPTH_TEST);
@@ -113,10 +103,8 @@ int main()
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
-
-	// game
-	Game paperPlaneGame = Game();
-	paperPlaneGame.Init();
+	
+	planeGame.Init();
 
 	//render loop
 	while (!glfwWindowShouldClose(mainWindow)) {
@@ -136,11 +124,14 @@ int main()
 
 		glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);		
-		drawSkybox(skyboxShader);		
-		paperPlaneGame.GenerateRooms(camera);
-		paperPlaneGame.RemoveRoom(camera);
-		drawPaperPlane(modelShader);
-		drawSilhouette(silhouetteShader);
+		drawSkybox(skyboxShader);
+		planeGame.Update(deltaTime, camera);
+// 		paperPlaneGame.GenerateRooms(camera);
+// 		paperPlaneGame.RemoveRoom(camera);
+// 		drawPaperPlane(modelShader);
+// 		drawSilhouette(silhouetteShader);
+
+
 		// ImGui
 		// ----------------------------------------------	
 // 		{
@@ -177,30 +168,6 @@ void processInput(GLFWwindow *window, float dt)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-
-	// plane controls
-	PTranslate.y -= 5.0f * dt;
-	camera.Position.z -= 5.0f * dt;
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-	{
-		PTranslate.z += 5.0f * dt;
-		camera.Position.y += 5.0f * dt;
-	}
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-	{
-		PTranslate.z -= 5.0f * dt;
-		camera.Position.y -= 5.0f * dt;
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-	{
-		PTranslate.x += 5.0f * dt;
-		camera.Position.x -= 5.0f * dt;
-	}
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-	{
-		PTranslate.x -= 5.0f * dt;
-		camera.Position.x += 5.0f * dt;
-	}
 
 	// camera free control for debugging
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -264,6 +231,27 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		camera.Position = CTranslate;
 		camera.ProcessMouseMovement(CRotYaw, CRotPitch);
 	}
+
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS) 
+		planeGame.Keys[GLFW_KEY_UP] = true;
+	else if (key == GLFW_KEY_UP && action == GLFW_RELEASE)
+		planeGame.Keys[GLFW_KEY_UP] = false;
+
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) 
+		planeGame.Keys[GLFW_KEY_DOWN] = true;
+	else if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE)
+		planeGame.Keys[GLFW_KEY_DOWN] = false;
+	
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) 
+		planeGame.Keys[GLFW_KEY_LEFT] = true;
+	else if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE)
+		planeGame.Keys[GLFW_KEY_LEFT] = false;
+	
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) 
+		planeGame.Keys[GLFW_KEY_RIGHT] = true;
+	else if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE)
+		planeGame.Keys[GLFW_KEY_RIGHT] = false;
+	
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
@@ -298,29 +286,6 @@ unsigned int loadCubemap(std::vector<std::string> faces)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	return textureID;
-}
-
-void drawPaperPlane(Shader &modelShader)
-{
-		modelShader.use();
-
-		// set model uniforms			
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 90.0f);
-		glm::mat4 view = camera.GetViewMatrix();
-		modelShader.setMat4("projection", projection);
-		modelShader.setMat4("view", view);
-		// draw paperPlane as normal, writing to the stencil buffer
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glStencilMask(0xFF);
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::translate(model, glm::vec3(-4.5f, 9.0f, 3.6f));
-		model = glm::translate(model, PTranslate);
-		model = glm::scale(model, glm::vec3(0.01f));
-		modelShader.setMat4("model", model);
-
-		paperPlane.render(modelShader, false);	
 }
 
 unsigned int skyboxVAO = 0, skyboxVBO = 0, cubemapTexture = 0;
@@ -412,36 +377,4 @@ void drawSkybox(Shader &skyboxShader)
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 	glDepthFunc(GL_LESS);
-}
-
-void drawSilhouette(Shader& silhouetteShader)
-{
-	// set uniforms
-	silhouetteShader.use();
-	
-	glm::mat4 view = camera.GetViewMatrix();
-	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 90.0f);
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::translate(model, glm::vec3(-4.5f, 9.0f, 3.6f));
-	model = glm::translate(model, PTranslate);
-	model = glm::scale(model, glm::vec3(0.01f));
-
-	silhouetteShader.setMat4("model", model);
-	silhouetteShader.setMat4("view", view);
-	silhouetteShader.setMat4("projection", projection);
-
-	// draw slightly scaled versions of the plane, this time disabling stencil writing.
-	// Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing 
-	// the objects' size differences, making it look like borders.
-	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-	glStencilMask(0x00);
-	glDisable(GL_DEPTH_TEST);
-
-	paperPlane.render(silhouetteShader, false);
-
-	glStencilMask(0xFF);
-	glStencilFunc(GL_ALWAYS, 0, 0xFF);
-	glEnable(GL_DEPTH_TEST);
 }

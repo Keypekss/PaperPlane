@@ -5,24 +5,31 @@
 #include <glm/glm.hpp>
 
 #include "Room.h"
+#include "Plane.h"
 
 // initial player values
 
 class Game {
 public:
 	Game() = default;
-
-	void Init();
-	void GenerateRooms(Camera &camera);
-	void RemoveRoom(Camera &camera);
-
 	~Game();
 
+	void Init();
+	void DrawSkybox();
+	void GenerateRooms(Camera &camera);
+	void RemoveRoom(Camera &camera);
+	void Render(Camera &camera);
+	void ProcessInput(float deltaTime, Camera& camera);
+	void Update(float deltaTime, Camera& camera);
+
+	bool Keys[1024];
+
+
 private:
+	void Clear();	
 
-	void Clear();
+	Plane plane;
 	unsigned int RoomCount = 5;	
-	std::vector<Room> Rooms;
-
+	std::vector<Room> Rooms;	
 };
 
