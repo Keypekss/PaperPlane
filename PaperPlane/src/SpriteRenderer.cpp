@@ -23,7 +23,7 @@ void SpriteRenderer::DrawLine(glm::vec3 location, glm::vec3 startPos, glm::vec3 
 	this->shader.setMat4("model", model);
 
 	unsigned int lineVAO, lineVBO;
-	int vertices[] = {
+	float vertices[] = {
 		startPos.x, startPos.y, startPos.z,
 		endPos.x, endPos.y, endPos.z
 	};
@@ -36,7 +36,7 @@ void SpriteRenderer::DrawLine(glm::vec3 location, glm::vec3 startPos, glm::vec3 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_INT, GL_FALSE, 3 * sizeof(int), (void*)0);	
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 	glDrawArrays(GL_LINES, 0, 2);
 

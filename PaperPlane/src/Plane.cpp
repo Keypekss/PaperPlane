@@ -5,7 +5,7 @@
 #include "Plane.h"
 
 Plane::Plane() :
-	TranslatePlane(glm::vec3(1.0f)), PlaneModel(glm::vec3(0.0f), glm::vec3(1.0f), false)
+	PlaneModel(glm::vec3(0.0f), glm::vec3(1.0f), false), PlanePos(-3.5f, 9.0f, 4.7f),  CBoxPos(3.7f, 4.3f, 9.0f)
 {	
 }
 
@@ -24,9 +24,9 @@ void Plane::drawPlane(Shader &modelShader, Camera& camera)
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::translate(model, glm::vec3(-4.5f, 9.0f, 3.6f));
-	model = glm::translate(model, TranslatePlane);
+	model = glm::translate(model, PlanePos);
 	model = glm::scale(model, glm::vec3(0.01f));
+	
 	modelShader.setMat4("model", model);
 
 	PlaneModel.render(modelShader, false);
@@ -42,8 +42,7 @@ void Plane::drawSilhouette(Shader& silhouetteShader, Camera& camera)
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::translate(model, glm::vec3(-4.5f, 9.0f, 3.6f));
-	model = glm::translate(model, TranslatePlane);
+	model = glm::translate(model, PlanePos);
 	model = glm::scale(model, glm::vec3(0.01f));
 
 	silhouetteShader.setMat4("model", model);
@@ -64,9 +63,31 @@ void Plane::drawSilhouette(Shader& silhouetteShader, Camera& camera)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void Plane::setTranslatePlane(glm::vec3 translate)
+void Plane::drawCollisionBox(SpriteRenderer& lineRenderer, Camera& camera)
 {
-	TranslatePlane = translate;
+	std::vector<std::vector<glm::vec3>> vertices{
+		// first point										// second point
+		{glm::vec3(0,			0,			0),				glm::vec3(CBoxWidth,	0,			0)}, // front
+		{glm::vec3(0,			0,			0),				glm::vec3(0,			CBoxHeight,	0)},
+		{glm::vec3(0,			CBoxHeight,	0),				glm::vec3(CBoxWidth,	CBoxHeight,	0)},
+		{glm::vec3(CBoxWidth,	CBoxHeight,	0),				glm::vec3(CBoxWidth,	0,			0)},
+
+		{glm::vec3(0,			0,			0),				glm::vec3(0,			0,			-CBoxDepth)}, // sides
+		{glm::vec3(0,			CBoxHeight,	0),				glm::vec3(0,			CBoxHeight,	-CBoxDepth)},
+		{glm::vec3(CBoxWidth,	CBoxHeight,	0),				glm::vec3(CBoxWidth,	CBoxHeight,	-CBoxDepth)},
+		{glm::vec3(CBoxWidth,	0,			0),				glm::vec3(CBoxWidth,	0,			-CBoxDepth)},
+
+		{glm::vec3(0,			0,			-CBoxDepth),	glm::vec3(CBoxWidth,	0,			-CBoxDepth)}, // back
+		{glm::vec3(0,			0,			-CBoxDepth),	glm::vec3(0,			CBoxHeight,	-CBoxDepth)},
+		{glm::vec3(0,			CBoxHeight,	-CBoxDepth),	glm::vec3(CBoxWidth,	CBoxHeight,	-CBoxDepth)},
+		{glm::vec3(CBoxWidth,	CBoxHeight,	-CBoxDepth),	glm::vec3(CBoxWidth,	0,			-CBoxDepth)}
+	};
+
+	for (size_t i = 0; i < vertices.size(); i++) {
+		glm::vec3 startPos = vertices.at(i).at(0);
+		glm::vec3 endPos = vertices.at(i).at(1);
+		lineRenderer.DrawLine(CBoxPos, startPos, endPos, glm::vec3(1.0f, 0.0f, 1.0f), camera);
+	}
 }
 
 void Plane::Init()

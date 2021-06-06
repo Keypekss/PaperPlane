@@ -20,13 +20,9 @@
 #include "Game.h"
 #include "Plane.h"
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window, float dt);
-unsigned int loadCubemap(std::vector<std::string> faces);
-void drawSkybox(Shader& skyboxShader);
 
 const unsigned int SCR_WIDTH = 1280, SCR_HEIGHT = 720;
 
@@ -75,10 +71,8 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(mainWindow);
-	glfwSetFramebufferSizeCallback(mainWindow, framebuffer_size_callback);
 	glfwSetCursorPosCallback(mainWindow, mouse_callback);
 	glfwSetKeyCallback(mainWindow, key_callback);
-	glfwSetScrollCallback(mainWindow, scroll_callback);
 	glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//initialize glad
@@ -87,22 +81,19 @@ int main()
 		return -1;
 	}
 
-	// initialize ImGUI
-// 	IMGUI_CHECKVERSION();
-// 	ImGui::CreateContext();
-// 	ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
-// 	ImGui::StyleColorsDark();
-// 	ImGui_ImplOpenGL3_Init((char*)glGetString(330));
-
-	// load shaders
-	Shader skyboxShader("Shaders/skybox.vert", "Shaders/skybox.frag");
-
 	// global openGL state
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+
+	// initialize ImGUI
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
+	ImGui::StyleColorsDark();
+	ImGui_ImplOpenGL3_Init((char*)glGetString(330));
 	
 	planeGame.Init();
 
@@ -110,10 +101,10 @@ int main()
 	while (!glfwWindowShouldClose(mainWindow)) {
 
 		// start ImGUI
-// 		ImGui_ImplOpenGL3_NewFrame();
-// 		ImGui_ImplGlfw_NewFrame();
-// 		ImGui::NewFrame();
-
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+	
 		// per-frame time logic
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
@@ -124,39 +115,39 @@ int main()
 
 		glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);		
-		drawSkybox(skyboxShader);
 		planeGame.Update(deltaTime, camera);
-// 		paperPlaneGame.GenerateRooms(camera);
-// 		paperPlaneGame.RemoveRoom(camera);
-// 		drawPaperPlane(modelShader);
-// 		drawSilhouette(silhouetteShader);
-
 
 		// ImGui
 		// ----------------------------------------------	
-// 		{
-// 			ImGui::Begin("Transformations");
-// 						
-// 			// translate camera
-// 			ImGui::SliderFloat3("CTranslate ", glm::value_ptr(CTranslate), -25.0f, 25.0f);
-// 			ImGui::SliderFloat("CRotYaw ", &CRotYaw, -90.0f, 90.0f);
-// 			ImGui::SliderFloat("CRotPitch ", &CRotPitch, -90.0f, 90.0f);
-// 
-// 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-// 			ImGui::End();
-// 		}
-// 
-// 		ImGui::Render();
-// 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		{			
+			ImGui::Begin("Transformations");                          // Create a window called "Hello, world!" and append into it.
+
+			// translate mirror
+			ImGui::SliderFloat3("PaperPlane ", glm::value_ptr(PTranslate), -25.0f, 25.0f);
+
+			// translate camera
+			ImGui::SliderFloat3("CTranslate ", glm::value_ptr(CTranslate), -25.0f, 25.0f);
+			ImGui::SliderFloat("CRotYaw ", &CRotYaw, -90.0f, 90.0f);
+			ImGui::SliderFloat("CRotPitch ", &CRotPitch, -90.0f, 90.0f);
+
+
+			ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color			
+
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::End();
+		}
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(mainWindow);
 		glfwPollEvents();
 	}
 
 	// shutdown ImGUI
-// 	ImGui_ImplOpenGL3_Shutdown();
-// 	ImGui_ImplGlfw_Shutdown();
-// 	ImGui::DestroyContext();
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();
 	return 0;
@@ -183,15 +174,6 @@ void processInput(GLFWwindow *window, float dt)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 	}
 }
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	// make sure the viewport matches the new window dimensions
-	glViewport(0, 0, width, height);
-}
-
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
@@ -252,129 +234,4 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	else if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE)
 		planeGame.Keys[GLFW_KEY_RIGHT] = false;
 	
-}
-
-// glfw: whenever the mouse scroll wheel scrolls, this callback is called
-// ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-	camera.ProcessMouseScroll(yoffset);
-}
-
-unsigned int loadCubemap(std::vector<std::string> faces)
-{
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-	int width, height, nrChannels;
-	for (size_t i = 0; i < faces.size(); i++) {
-		unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
-		if (data) {
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-			stbi_image_free(data);
-		} else {
-			std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-			stbi_image_free(data);
-		}
-	}
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-	return textureID;
-}
-
-unsigned int skyboxVAO = 0, skyboxVBO = 0, cubemapTexture = 0;
-void drawSkybox(Shader &skyboxShader)
-{
-	// initialize if necessary
-	if (skyboxVAO == 0) {
-		float skyboxVertices[] = {
-			// positions          
-			-1.0f,  1.0f, -1.0f,
-			-1.0f, -1.0f, -1.0f,
-			 1.0f, -1.0f, -1.0f,
-			 1.0f, -1.0f, -1.0f,
-			 1.0f,  1.0f, -1.0f,
-			-1.0f,  1.0f, -1.0f,
-
-			-1.0f, -1.0f,  1.0f,
-			-1.0f, -1.0f, -1.0f,
-			-1.0f,  1.0f, -1.0f,
-			-1.0f,  1.0f, -1.0f,
-			-1.0f,  1.0f,  1.0f,
-			-1.0f, -1.0f,  1.0f,
-
-			 1.0f, -1.0f, -1.0f,
-			 1.0f, -1.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f, -1.0f,
-			 1.0f, -1.0f, -1.0f,
-
-			-1.0f, -1.0f,  1.0f,
-			-1.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f, -1.0f,  1.0f,
-			-1.0f, -1.0f,  1.0f,
-
-			-1.0f,  1.0f, -1.0f,
-			 1.0f,  1.0f, -1.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			-1.0f,  1.0f,  1.0f,
-			-1.0f,  1.0f, -1.0f,
-
-			-1.0f, -1.0f, -1.0f,
-			-1.0f, -1.0f,  1.0f,
-			 1.0f, -1.0f, -1.0f,
-			 1.0f, -1.0f, -1.0f,
-			-1.0f, -1.0f,  1.0f,
-			 1.0f, -1.0f,  1.0f
-		};
-
-		// load skybox texture
-		std::vector<std::string> faces{
-				"Resources/skybox/right.jpg",
-				"Resources/skybox/left.jpg",
-				"Resources/skybox/top.jpg",
-				"Resources/skybox/bottom.jpg",
-				"Resources/skybox/front.jpg",
-				"Resources/skybox/back.jpg"
-		};
-		cubemapTexture = loadCubemap(faces);
-
-
-		glGenVertexArrays(1, &skyboxVAO);
-		glGenBuffers(1, &skyboxVBO);
-		glBindVertexArray(skyboxVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-		skyboxShader.use();
-		skyboxShader.setInt("skybox", 1);
-	}
-
-	glm::mat4 view = camera.GetViewMatrix();
-	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-	// draw skybox as last
-	glDepthFunc(GL_LEQUAL);
-	skyboxShader.use();
-	view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-	skyboxShader.setMat4("view", view);
-	skyboxShader.setMat4("projection", projection);
-	// skybox cube
-	glBindVertexArray(skyboxVAO);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glBindVertexArray(0);
-	glDepthFunc(GL_LESS);
 }

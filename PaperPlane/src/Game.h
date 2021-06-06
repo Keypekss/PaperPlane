@@ -15,12 +15,17 @@ public:
 	~Game();
 
 	void Init();
-	void DrawSkybox();
+	void InitSkybox();
+	void DrawSkybox(Camera& camera);
+	unsigned int loadCubemap(std::vector<std::string> faces);
 	void GenerateRooms(Camera &camera);
 	void RemoveRoom(Camera &camera);
 	void Render(Camera &camera);
 	void ProcessInput(float deltaTime, Camera& camera);
 	void Update(float deltaTime, Camera& camera);
+	bool CheckCollision(Plane& plane, Block& block);
+	void DoCollisions();
+
 
 	bool Keys[1024];
 
@@ -29,7 +34,7 @@ private:
 	void Clear();	
 
 	Plane plane;
-	unsigned int RoomCount = 5;	
+	unsigned int RoomCount = 5;		
 	std::vector<Room> Rooms;	
 };
 

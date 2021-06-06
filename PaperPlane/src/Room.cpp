@@ -75,6 +75,11 @@ int Room::GetDepth()
 	return RDepth;	
 }
 
+std::vector<Block> Room::GetBlocks()
+{
+	return blocks;
+}
+
 Room::~Room()
 = default;
 

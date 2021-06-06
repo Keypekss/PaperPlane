@@ -15,8 +15,9 @@ public:
 
 	// getters
 	glm::vec3 GetPos();
-	int GetDepth();
-	
+	int GetDepth();	
+	std::vector<Block> GetBlocks();
+
 	~Room();
 private:
 	std::vector<Block> blocks;

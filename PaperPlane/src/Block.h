@@ -14,12 +14,13 @@ public:
 	// getters
 	glm::vec3 GetPos() const;
 
+	// block dimensions
+	float BWidth, BHeight, BDepth;
 	~Block();	
 
 private:
 	void RandomizeDepth(glm::vec3 pos);
-	// block dimensions
-	float BWidth, BHeight, BDepth;
+	
 
 	// block position
 	glm::vec3 BPos;

@@ -2,6 +2,7 @@
 #include "Model.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "SpriteRenderer.h"
 
 class Plane {
 public:
@@ -11,10 +12,12 @@ public:
 
 	void drawPlane(Shader &modelShader, Camera& camera);
 	void drawSilhouette(Shader& silhouetteShader, Camera& camera);
-	void setTranslatePlane(glm::vec3 translate);
+	void drawCollisionBox(SpriteRenderer& lineRenderer, Camera& camera);
 	void Init();
-	glm::vec3 TranslatePlane;
-	
+
+	glm::vec3 PlanePos;
+	glm::vec3 CBoxPos; // collision box position	
+	float CBoxWidth = 1.1f, CBoxHeight = 0.35f, CBoxDepth = 1.0f; // collision box size
 
 private:
 	Model PlaneModel;
