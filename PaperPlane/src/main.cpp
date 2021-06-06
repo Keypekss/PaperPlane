@@ -120,10 +120,10 @@ int main()
 		// ImGui
 		// ----------------------------------------------	
 		{			
-			ImGui::Begin("Transformations");                          // Create a window called "Hello, world!" and append into it.
+			ImGui::Begin("Transformations");   
 
 			// translate mirror
-			ImGui::SliderFloat3("PaperPlane ", glm::value_ptr(PTranslate), -25.0f, 25.0f);
+			ImGui::SliderFloat3("PaperPlane ", glm::value_ptr(planeGame.plane.CBoxPos), -10.0f, 10.0f);
 
 			// translate camera
 			ImGui::SliderFloat3("CTranslate ", glm::value_ptr(CTranslate), -25.0f, 25.0f);

@@ -230,20 +230,19 @@ void Game::Update(float deltaTime, Camera& camera)
 
 bool Game::CheckCollision(Plane& plane, Block& block)
 {
+	// Note: plane collision box position is bottom left side whereas 
+	// block's position is middle of the block so we do addition to plane pos to make it in the middle as well
+
 	// collision x-axis?
-	bool collisionX = plane.CBoxPos.x + plane.CBoxWidth >= block.GetPos().x &&
+	bool collisionX = plane.CBoxPos.x + block.BWidth + plane.CBoxWidth >= block.GetPos().x &&
 		block.GetPos().x + block.BWidth >= plane.CBoxPos.x;
-// 	std::cout << plane.CBoxPos.x << " + " << plane.CBoxWidth << " >= " << block.GetPos().x << " && " << block.GetPos().x << " + " << block.BWidth << " >= " << plane.CBoxPos.x << std::endl;
-// 	std::cout << plane.CBoxPos.y << " + " << plane.CBoxHeight << " >= " << block.GetPos().y << " && " << block.GetPos().y << " + " << block.BHeight << " >= " << plane.CBoxPos.y << std::endl;
-// 	std::cout << std::endl;
 	// collision y-axis?
-	bool collisionY = plane.CBoxPos.y + plane.CBoxHeight >= block.GetPos().y &&
-		block.GetPos().y + block.BHeight >= plane.CBoxPos.y;
-	
+	bool collisionY = plane.CBoxPos.y + + block.BHeight + plane.CBoxHeight >= block.GetPos().y &&
+		block.GetPos().y + block.BHeight >= plane.CBoxPos.y;	
 
 	// collision z-axis?
-	bool collisionZ = plane.CBoxPos.z + plane.CBoxDepth >= block.GetPos().z &&
-		block.GetPos().z + block.BDepth >= plane.CBoxPos.z;
+	bool collisionZ = plane.CBoxPos.z - plane.CBoxDepth <= block.GetPos().z &&
+		block.GetPos().z - block.BDepth <= plane.CBoxPos.z;
 
 	// collision only if on both axes
 	return collisionX && collisionY && collisionZ;
@@ -256,7 +255,6 @@ void Game::DoCollisions()
 		if (CheckCollision(plane, block)) 
 			std::cout << "Plane collided." << std::endl;
 	}
-	
 	std::cout << std::endl;
 }
 

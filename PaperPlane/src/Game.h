@@ -25,6 +25,7 @@ public:
 	void Update(float deltaTime, Camera& camera);
 	bool CheckCollision(Plane& plane, Block& block);
 	void DoCollisions();
+	Plane plane;
 
 
 	bool Keys[1024];
@@ -33,7 +34,6 @@ public:
 private:
 	void Clear();	
 
-	Plane plane;
 	unsigned int RoomCount = 5;		
 	std::vector<Room> Rooms;	
 };

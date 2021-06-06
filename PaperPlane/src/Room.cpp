@@ -42,7 +42,6 @@ void Room::DrawDebugCube(SpriteRenderer& lineRenderer, SpriteRenderer& blockRend
 	GenerateRoom(18);
 	for (auto block : blocks) {
 		block.DrawBlock(blockRenderer ,camera);
-		//block.DrawDebugLines(lineRenderer, camera);
 	}
 }
 
