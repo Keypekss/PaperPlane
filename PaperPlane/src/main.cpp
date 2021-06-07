@@ -37,9 +37,6 @@ bool enableCameraMovement = false;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-//keys
-bool Keys[1024];
-
 // ImGUI state
 // ----------------------------------------------	
 ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -214,24 +211,36 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		camera.ProcessMouseMovement(CRotYaw, CRotPitch);
 	}
 
-	if (key == GLFW_KEY_UP && action == GLFW_PRESS) 
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
 		planeGame.Keys[GLFW_KEY_UP] = true;
-	else if (key == GLFW_KEY_UP && action == GLFW_RELEASE)
+	}
+	else if (key == GLFW_KEY_UP && action == GLFW_RELEASE) {
 		planeGame.Keys[GLFW_KEY_UP] = false;
+		planeGame.KeysProcessed[GLFW_KEY_UP] = false;
+	}
 
-	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) 
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
 		planeGame.Keys[GLFW_KEY_DOWN] = true;
-	else if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE)
+	}
+	else if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
 		planeGame.Keys[GLFW_KEY_DOWN] = false;
+		planeGame.KeysProcessed[GLFW_KEY_DOWN] = false;
+	}
 	
-	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) 
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
 		planeGame.Keys[GLFW_KEY_LEFT] = true;
-	else if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE)
+	}
+	else if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
 		planeGame.Keys[GLFW_KEY_LEFT] = false;
+		planeGame.KeysProcessed[GLFW_KEY_LEFT] = false;
+	}
 	
-	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) 
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
 		planeGame.Keys[GLFW_KEY_RIGHT] = true;
-	else if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE)
+	}
+	else if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
 		planeGame.Keys[GLFW_KEY_RIGHT] = false;
+		planeGame.KeysProcessed[GLFW_KEY_RIGHT] = false;
+	}
 	
 }

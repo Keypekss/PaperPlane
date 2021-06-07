@@ -16,6 +16,7 @@ public:
 	void Init();
 
 	glm::vec3 PlanePos;
+	glm::vec3 InitialPlanePos;
 	glm::vec3 CBoxPos; // collision box position	
 	float CBoxWidth = 1.1f, CBoxHeight = 0.35f, CBoxDepth = 1.0f; // collision box size
 

@@ -29,6 +29,7 @@ public:
 
 
 	bool Keys[1024];
+	bool KeysProcessed[1024];
 
 
 private:

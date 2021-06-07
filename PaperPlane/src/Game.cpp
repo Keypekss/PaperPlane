@@ -191,32 +191,45 @@ void Game::ProcessInput(float deltaTime, Camera& camera)
 	// move plane and camera forward
 	plane.PlanePos.y -= 5.0f * deltaTime;
 	plane.CBoxPos.z -= 5.0f * deltaTime;
-	camera.Position.z -= 5.0f * deltaTime;
+	camera.Position.z -= 5.0f * deltaTime; 
 
 	// plane controls
-	if (Keys[GLFW_KEY_UP])
+	if (Keys[GLFW_KEY_UP] && !KeysProcessed[GLFW_KEY_UP])
 	{
-		plane.PlanePos.z += 5.0f * deltaTime;
-		plane.CBoxPos.y += 5.0f * deltaTime;
-		camera.Position.y += 5.0f * deltaTime;
+		// keeps plane in the bounding box
+		if (plane.PlanePos.z + 3.0f < plane.InitialPlanePos.z + 6.0f) {
+			plane.PlanePos.z += 3.0f;
+			plane.CBoxPos.y += 3.0f;
+			camera.Position.y += 3.0f;
+			KeysProcessed[GLFW_KEY_UP] = true;
+		}
 	}
-	if (Keys[GLFW_KEY_DOWN])
+	if (Keys[GLFW_KEY_DOWN] && !KeysProcessed[GLFW_KEY_DOWN])
 	{
-		plane.PlanePos.z -= 5.0f * deltaTime;
-		plane.CBoxPos.y -= 5.0f * deltaTime;
-		camera.Position.y -= 5.0f * deltaTime;
+		if (plane.PlanePos.z - 3.0f > plane.InitialPlanePos.z - 6.0f) {
+			plane.PlanePos.z -= 3.0f;
+			plane.CBoxPos.y -= 3.0f;
+			camera.Position.y -= 3.0f;
+			KeysProcessed[GLFW_KEY_DOWN] = true;
+		}
 	}
-	if (Keys[GLFW_KEY_LEFT])
+	if (Keys[GLFW_KEY_LEFT] && !KeysProcessed[GLFW_KEY_LEFT])
 	{
-		plane.PlanePos.x += 5.0f * deltaTime;
-		plane.CBoxPos.x -= 5.0f * deltaTime;
-		camera.Position.x -= 5.0f * deltaTime;
+		if (plane.PlanePos.x + 3.0f < plane.InitialPlanePos.x + 6.0f) {
+			plane.PlanePos.x += 3.0f;
+			plane.CBoxPos.x -= 3.0f;
+			camera.Position.x -= 3.0f;
+			KeysProcessed[GLFW_KEY_LEFT] = true;
+		}
 	}
-	if (Keys[GLFW_KEY_RIGHT])
+	if (Keys[GLFW_KEY_RIGHT] && !KeysProcessed[GLFW_KEY_RIGHT])
 	{
-		plane.PlanePos.x -= 5.0f * deltaTime;
-		plane.CBoxPos.x += 5.0f * deltaTime;
-		camera.Position.x += 5.0f * deltaTime;
+		if (plane.PlanePos.x - 3.0f > plane.InitialPlanePos.x - 6.0f) {
+			plane.PlanePos.x -= 3.0f;
+			plane.CBoxPos.x += 3.0f;
+			camera.Position.x += 3.0f;
+			KeysProcessed[GLFW_KEY_RIGHT] = true;
+		}
 	}
 }
 
