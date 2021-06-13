@@ -1,6 +1,9 @@
 #include "Room.h"
 #include "Block.h"
 
+#include <chrono>
+#include <random>
+
 Block::Block()
 	: BWidth(1.5f), BHeight(1.5f), BDepth(0.1f), BPos(glm::vec3(0.0f)), BColor(1.0f)
 {
@@ -14,7 +17,10 @@ void Block::DrawBlock(SpriteRenderer& blockRenderer, Camera &camera)
 
 void Block::GenerateBlock(glm::vec3 pos)
 {
-	int selectPos = rand() % 9;
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	std::minstd_rand0 rng(seed);
+
+	int selectPos = rng() % 9;
 	switch (selectPos) {
 		// don't know why i need to multiple by 2 and subtract the width and height.
 		// but sometimes it just works -Todd Howard

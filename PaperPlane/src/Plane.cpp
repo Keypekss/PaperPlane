@@ -5,7 +5,7 @@
 #include "Plane.h"
 
 Plane::Plane() :
-	PlaneModel(glm::vec3(0.0f), glm::vec3(1.0f), false), PlanePos(-3.5f, 9.0f, 4.7f), InitialPlanePos(PlanePos), CBoxPos(3.7f, 4.3f, 9.0f)
+	PlaneModel(glm::vec3(0.0f), glm::vec3(1.0f), false), PlanePos(-3.5f, 9.0f, 4.7f), InitialPlanePos(PlanePos), CBoxPos(3.7f, 4.3f, 9.0f) 
 {	
 }
 

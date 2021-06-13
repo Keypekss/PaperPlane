@@ -9,6 +9,13 @@
 
 // initial player values
 
+enum Directions {
+	DIR_UP,
+	DIR_DOWN,
+	DIR_LEFT,
+	DIR_RIGHT
+};
+
 class Game {
 public:
 	Game() = default;
@@ -25,17 +32,17 @@ public:
 	void Update(float deltaTime, Camera& camera);
 	bool CheckCollision(Plane& plane, Block& block);
 	void DoCollisions();
+	void Move(Camera& camera, float deltaTime, float moveBy, int dir);
 	Plane plane;
-
 
 	bool Keys[1024];
 	bool KeysProcessed[1024];
-
 
 private:
 	void Clear();	
 
 	unsigned int RoomCount = 5;		
-	std::vector<Room> Rooms;	
+	std::vector<Room> Rooms;
+	glm::vec3 previousPlanePos = plane.InitialPlanePos;
 };
 

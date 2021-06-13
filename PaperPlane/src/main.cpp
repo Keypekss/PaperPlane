@@ -111,7 +111,8 @@ int main()
 		processInput(mainWindow, deltaTime);		
 
 		glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);		
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	
+
 		planeGame.Update(deltaTime, camera);
 
 		// ImGui
@@ -213,34 +214,33 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
 		planeGame.Keys[GLFW_KEY_UP] = true;
+		planeGame.KeysProcessed[GLFW_KEY_UP] = false;
 	}
 	else if (key == GLFW_KEY_UP && action == GLFW_RELEASE) {
-		planeGame.Keys[GLFW_KEY_UP] = false;
-		planeGame.KeysProcessed[GLFW_KEY_UP] = false;
+		planeGame.Keys[GLFW_KEY_UP] = false;		
 	}
 
 	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
 		planeGame.Keys[GLFW_KEY_DOWN] = true;
+		planeGame.KeysProcessed[GLFW_KEY_DOWN] = false;
 	}
 	else if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
-		planeGame.Keys[GLFW_KEY_DOWN] = false;
-		planeGame.KeysProcessed[GLFW_KEY_DOWN] = false;
+		planeGame.Keys[GLFW_KEY_DOWN] = false;		
 	}
 	
 	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
 		planeGame.Keys[GLFW_KEY_LEFT] = true;
+		planeGame.KeysProcessed[GLFW_KEY_LEFT] = false;
 	}
 	else if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
-		planeGame.Keys[GLFW_KEY_LEFT] = false;
-		planeGame.KeysProcessed[GLFW_KEY_LEFT] = false;
+		planeGame.Keys[GLFW_KEY_LEFT] = false;		
 	}
 	
 	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
 		planeGame.Keys[GLFW_KEY_RIGHT] = true;
-	}
-	else if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
-		planeGame.Keys[GLFW_KEY_RIGHT] = false;
 		planeGame.KeysProcessed[GLFW_KEY_RIGHT] = false;
 	}
-	
+	else if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
+		planeGame.Keys[GLFW_KEY_RIGHT] = false;		
+	}	
 }

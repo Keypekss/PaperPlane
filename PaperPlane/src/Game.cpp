@@ -186,50 +186,106 @@ void Game::Render(Camera &camera)
 	plane.drawCollisionBox(*LineRenderer, camera);
 }
 
+bool flag1 = false;
+bool flag2 = false;
+bool flag3 = false;
+bool flag4 = false;
 void Game::ProcessInput(float deltaTime, Camera& camera)
 {
 	// move plane and camera forward
 	plane.PlanePos.y -= 5.0f * deltaTime;
 	plane.CBoxPos.z -= 5.0f * deltaTime;
-	camera.Position.z -= 5.0f * deltaTime; 
-
+	camera.Position.z -= 5.0f * deltaTime;
+	
 	// plane controls
-	if (Keys[GLFW_KEY_UP] && !KeysProcessed[GLFW_KEY_UP])
-	{
-		// keeps plane in the bounding box
-		if (plane.PlanePos.z + 3.0f < plane.InitialPlanePos.z + 6.0f) {
-			plane.PlanePos.z += 3.0f;
-			plane.CBoxPos.y += 3.0f;
-			camera.Position.y += 3.0f;
-			KeysProcessed[GLFW_KEY_UP] = true;
-		}
+	if (flag1 || Keys[GLFW_KEY_UP] && !KeysProcessed[GLFW_KEY_UP]) {
+		if (plane.PlanePos.z < previousPlanePos.z + 3.0f) { // move plane only by 3
+			if (plane.PlanePos.z < plane.InitialPlanePos.z + 3.0f) { // keeps plane in the bounding box
+				flag1 = true;
+				flag2 = false; // only one flag can be true at a time
+				flag3 = false;
+				flag4 = false;
+				Move(camera, deltaTime, 3.0f, DIR_UP);				
+			} 
+		} else {
+			flag1 = false;
+			previousPlanePos = plane.PlanePos;
+		}		
+		KeysProcessed[GLFW_KEY_UP] = true;
 	}
-	if (Keys[GLFW_KEY_DOWN] && !KeysProcessed[GLFW_KEY_DOWN])
-	{
-		if (plane.PlanePos.z - 3.0f > plane.InitialPlanePos.z - 6.0f) {
-			plane.PlanePos.z -= 3.0f;
-			plane.CBoxPos.y -= 3.0f;
-			camera.Position.y -= 3.0f;
-			KeysProcessed[GLFW_KEY_DOWN] = true;
+	if (flag2 || Keys[GLFW_KEY_DOWN] && !KeysProcessed[GLFW_KEY_DOWN]) {
+		if (plane.PlanePos.z > previousPlanePos.z - 3.0f) {
+			if (plane.PlanePos.z > plane.InitialPlanePos.z - 3.0f) {
+				flag2 = true;
+				flag1 = false;
+				flag3 = false;
+				flag4 = false;
+				Move(camera, deltaTime, 3.0f, DIR_DOWN);
+			} 
+		} else {
+			flag2 = false;
+			previousPlanePos = plane.PlanePos;
 		}
+		KeysProcessed[GLFW_KEY_DOWN] = true;
 	}
-	if (Keys[GLFW_KEY_LEFT] && !KeysProcessed[GLFW_KEY_LEFT])
-	{
-		if (plane.PlanePos.x + 3.0f < plane.InitialPlanePos.x + 6.0f) {
-			plane.PlanePos.x += 3.0f;
-			plane.CBoxPos.x -= 3.0f;
-			camera.Position.x -= 3.0f;
-			KeysProcessed[GLFW_KEY_LEFT] = true;
+	if (flag3 || Keys[GLFW_KEY_LEFT] && !KeysProcessed[GLFW_KEY_LEFT]) {
+		if (plane.PlanePos.x < previousPlanePos.x + 3.0f) {
+			if (plane.PlanePos.x < plane.InitialPlanePos.x + 3.0f) {
+				flag3 = true;
+				flag1 = false;
+				flag2 = false;
+				flag4 = false;
+				Move(camera, deltaTime, 3.0f, DIR_LEFT);
+			} 
+		} else {
+			flag3 = false;
+			previousPlanePos = plane.PlanePos;
 		}
+		KeysProcessed[GLFW_KEY_LEFT] = true;
 	}
-	if (Keys[GLFW_KEY_RIGHT] && !KeysProcessed[GLFW_KEY_RIGHT])
-	{
-		if (plane.PlanePos.x - 3.0f > plane.InitialPlanePos.x - 6.0f) {
-			plane.PlanePos.x -= 3.0f;
-			plane.CBoxPos.x += 3.0f;
-			camera.Position.x += 3.0f;
-			KeysProcessed[GLFW_KEY_RIGHT] = true;
+	if (flag4 || Keys[GLFW_KEY_RIGHT] && !KeysProcessed[GLFW_KEY_RIGHT]) {
+		if (plane.PlanePos.x > previousPlanePos.x - 3.0f) {
+			if (plane.PlanePos.x > plane.InitialPlanePos.x - 3.0f) {
+				flag4 = true;
+				flag1 = false;
+				flag2 = false;
+				flag3 = false;
+				Move(camera, deltaTime, 3.0f, DIR_RIGHT);
+			} 
+		} else {
+			flag4 = false;
+			previousPlanePos = plane.PlanePos;
 		}
+		KeysProcessed[GLFW_KEY_RIGHT] = true;
+	}
+}
+
+void Game::Move(Camera& camera, float deltaTime, float moveBy, int dir)
+{		
+	switch (dir) {
+	case DIR_UP:		
+		plane.PlanePos.z += 10.0f * deltaTime;
+		plane.CBoxPos.y += 10.0f * deltaTime;
+		camera.Position.y += 10.0f * deltaTime;		
+		break;
+	case DIR_DOWN:
+		plane.PlanePos.z -= 10.0f * deltaTime;
+		plane.CBoxPos.y -= 10.0f * deltaTime;
+		camera.Position.y -= 10.0f * deltaTime;		
+		break;
+	case DIR_LEFT:		
+		plane.PlanePos.x += 10.0f * deltaTime;
+		plane.CBoxPos.x -= 10.0f * deltaTime;
+		camera.Position.x -= 10.0f * deltaTime;		
+		break;
+	case DIR_RIGHT:				
+		plane.PlanePos.x -= 10.0f * deltaTime;
+		plane.CBoxPos.x += 10.0f * deltaTime;
+		camera.Position.x += 10.0f * deltaTime;		
+		break;
+	default:
+		std::cout << "ERROR :: default switch statement called.";
+		break;
 	}
 }
 
@@ -265,10 +321,11 @@ void Game::DoCollisions()
 {	
 	// check collisions with the blocks only in the first room
 	for (Block& block : Rooms.at(0).GetBlocks()) {		
-		if (CheckCollision(plane, block)) 
-			std::cout << "Plane collided." << std::endl;
+		if (CheckCollision(plane, block))
+			// std::cout << "Plane collided." << std::endl;
+			;
 	}
-	std::cout << std::endl;
+
 }
 
 Game::~Game()
