@@ -16,12 +16,20 @@ void Block::DrawBlock(SpriteRenderer& blockRenderer, Camera &camera)
 }
 
 void Block::GenerateBlock(glm::vec3 pos)
-{
-	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-	std::minstd_rand0 rng(seed);
-
-	int selectPos = rng() % 9;
-	switch (selectPos) {
+{	
+	// pick a random number from the following vector, store in selectedPos
+	std::vector<unsigned int> allPos = { 0,1,2,3,4,5,6,7,8 };
+	std::vector<unsigned int> selectedPos;
+	std::sample(
+		allPos.begin(),
+		allPos.end(),
+		std::back_inserter(selectedPos),
+		1,
+		std::mt19937{ std::random_device{}() }
+	);
+	
+	enumPos = selectedPos.at(0);
+	switch (enumPos) {
 		// don't know why i need to multiple by 2 and subtract the width and height.
 		// but sometimes it just works -Todd Howard
 	case BOTTOM_LEFT:
@@ -70,7 +78,7 @@ void Block::GenerateBlock(glm::vec3 pos)
 		RandomizeDepth(pos);
 		break;
 	default:
-		std::cout << "Error during selecting obstacle position" << std::endl;
+		std::cout << "Error during selecting block position" << std::endl;
 		break;
 	}
 }
@@ -78,6 +86,11 @@ void Block::GenerateBlock(glm::vec3 pos)
 glm::vec3 Block::GetPos() const
 {
 	return BPos;
+}
+
+unsigned int Block::GetEnumPos() const
+{
+	return enumPos;
 }
 
 void Block::RandomizeDepth(glm::vec3 pos)

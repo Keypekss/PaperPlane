@@ -23,24 +23,25 @@ public:
 
 	void Init();
 	void InitSkybox();
-	void DrawSkybox(Camera& camera);
+	void DrawSkybox(Camera& camera);	
 	unsigned int loadCubemap(std::vector<std::string> faces);
 	void GenerateRooms(Camera &camera);
 	void RemoveRoom(Camera &camera);
-	void Render(Camera &camera);
+	void Render(float deltaTime, Camera &camera);
 	void ProcessInput(float deltaTime, Camera& camera);
 	void Update(float deltaTime, Camera& camera);
 	bool CheckCollision(Plane& plane, Block& block);
 	void DoCollisions();
 	void Move(Camera& camera, float deltaTime, float moveBy, int dir);
 	Plane plane;
+	Coin coin;
 
 	bool Keys[1024];
 	bool KeysProcessed[1024];
 
 private:
 	void Clear();	
-
+	
 	unsigned int RoomCount = 5;		
 	std::vector<Room> Rooms;
 	glm::vec3 previousPlanePos = plane.InitialPlanePos;

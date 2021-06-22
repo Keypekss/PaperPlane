@@ -4,7 +4,9 @@
 
 SpriteRenderer* LineRenderer;
 SpriteRenderer* BlockRenderer;
+
 Shader modelShader;
+Shader coinShader;
 Shader silhouetteShader;
 Shader skyboxShader;
 
@@ -16,12 +18,17 @@ void Game::Init()
 	Shader blockShader("Shaders/block.vert", "Shaders/block.frag");
 	BlockRenderer = new SpriteRenderer(blockShader);
 
-	modelShader = Shader("Shaders/modelShader.vert", "Shaders/modelShader.frag");
-	silhouetteShader = Shader("Shaders/silhouette.vert", "Shaders/silhouette.frag");
-	skyboxShader = Shader("Shaders/skybox.vert", "Shaders/skybox.frag");
+	modelShader			= Shader("Shaders/modelShader.vert", "Shaders/modelShader.frag");
+	coinShader			= Shader("Shaders/modelShader.vert", "Shaders/modelShader.frag");
+	silhouetteShader	= Shader("Shaders/silhouette.vert", "Shaders/silhouette.frag");	
+	skyboxShader		= Shader("Shaders/skybox.vert", "Shaders/skybox.frag");
 
+	// load models and set shader matrices
 	plane = Plane();
 	plane.Init();
+
+	coin = Coin();
+	coin.Init();
 
 	InitSkybox();
 }
@@ -151,7 +158,7 @@ void Game::GenerateRooms(Camera &camera)
 {	
 	if (!FirstRoomInserted) {
 		Room room{ glm::vec3(0.0f) };
-		room.GenerateRoom(18);
+		room.GenerateRoom(15);
 		Rooms.push_back(room);
 		FirstRoomInserted = true;
 	}
@@ -159,7 +166,7 @@ void Game::GenerateRooms(Camera &camera)
 	while (Rooms.size() != RoomCount) {
 		// construct a room based on the position of the last room in the vector
 		Room room{ glm::vec3(0.0f, 0.0f, (*Rooms.rbegin()).GetPos().z - (*Rooms.rbegin()).GetDepth()) };
-		room.GenerateRoom(18);
+		room.GenerateRoom(15);
 		Rooms.push_back(room);
 	}
 
@@ -177,13 +184,14 @@ void Game::RemoveRoom(Camera &camera)
 	}
 }
 
-void Game::Render(Camera &camera)
+void Game::Render(float deltaTime, Camera &camera)
 {
 	GenerateRooms(camera);
 	RemoveRoom(camera);
 	plane.drawPlane(modelShader, camera);
 	plane.drawSilhouette(silhouetteShader, camera);
 	plane.drawCollisionBox(*LineRenderer, camera);
+	DrawSkybox(camera);	
 }
 
 bool flag1 = false;
@@ -193,9 +201,9 @@ bool flag4 = false;
 void Game::ProcessInput(float deltaTime, Camera& camera)
 {
 	// move plane and camera forward
-	plane.PlanePos.y -= 5.0f * deltaTime;
-	plane.CBoxPos.z -= 5.0f * deltaTime;
-	camera.Position.z -= 5.0f * deltaTime;
+// 	plane.PlanePos.y -= 5.0f * deltaTime;
+// 	plane.CBoxPos.z -= 5.0f * deltaTime;
+// 	camera.Position.z -= 5.0f * deltaTime;
 	
 	// plane controls
 	if (flag1 || Keys[GLFW_KEY_UP] && !KeysProcessed[GLFW_KEY_UP]) {
@@ -291,8 +299,7 @@ void Game::Move(Camera& camera, float deltaTime, float moveBy, int dir)
 
 void Game::Update(float deltaTime, Camera& camera)
 {
-	Render(camera);
-	DrawSkybox(camera);
+	Render(deltaTime, camera);
 	ProcessInput(deltaTime, camera);
 	DoCollisions();
 }

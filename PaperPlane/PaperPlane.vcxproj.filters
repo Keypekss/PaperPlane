@@ -78,6 +78,9 @@
     <ClCompile Include="src\Plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Coin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\ASSIMP\include\assimp\Compiler\poppack1.h">
@@ -1229,6 +1232,9 @@
     <ClInclude Include="src\Plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Coin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Dependencies\ASSIMP\include\assimp\color4.inl">
@@ -1676,6 +1682,10 @@
     <None Include="Shaders\block.frag" />
     <None Include="Shaders\silhouette.vert" />
     <None Include="Shaders\silhouette.frag" />
+    <None Include="Resources\Models\coin\scene.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Models\coin\scene.gltf" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\GLFW\lib-vc2017\glfw3dll.lib" />

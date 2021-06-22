@@ -8,11 +8,11 @@ public:
 	Block();	
 
 	void DrawBlock(SpriteRenderer& blockRenderer, Camera &camera);
-	void DrawDebugLines(SpriteRenderer& lineRenderer, Camera& camera);
 	void GenerateBlock(glm::vec3 pos);
 
 	// getters
 	glm::vec3 GetPos() const;
+	unsigned int GetEnumPos() const;
 
 	// block dimensions
 	float BWidth, BHeight, BDepth;
@@ -24,6 +24,7 @@ private:
 
 	// block position
 	glm::vec3 BPos;
+	unsigned int enumPos; // enum position we're using. will be used to decide where to spawn coins
 
 	// block color
 	glm::vec3 BColor;

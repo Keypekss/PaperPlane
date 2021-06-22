@@ -2,9 +2,7 @@
 
 out vec4 FragColor;
 
-in vec3 FragPos;
 in vec2 TexCoords;
-in vec3 Normal;
 
 struct Material {
 	vec4 diffuse;
@@ -21,8 +19,6 @@ uniform Material material;
 
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
-
-
 
 void main()
 {
@@ -46,6 +42,5 @@ void main()
 		result = texDiff * texSpec;
 	}
 	
-	  
 	FragColor = result;
 }
