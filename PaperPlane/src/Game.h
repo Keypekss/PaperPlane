@@ -34,7 +34,7 @@ public:
 	void DoCollisions();
 	void Move(Camera& camera, float deltaTime, float moveBy, int dir);
 	Plane plane;
-
+	Coin coin;
 	bool Keys[1024];
 	bool KeysProcessed[1024];
 

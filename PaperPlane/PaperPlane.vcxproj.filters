@@ -1671,7 +1671,6 @@
     </None>
     <None Include="assimp-vc141-mt.dll" />
     <None Include="imgui.ini" />
-    <None Include="Dependencies\GLFW\lib-vc2017\glfw3.dll" />
     <None Include="Shaders\skybox.vert" />
     <None Include="Shaders\modelShader.frag" />
     <None Include="Shaders\modelShader.vert" />
@@ -1686,10 +1685,5 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Resources\Models\coin\scene.gltf" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="Dependencies\GLFW\lib-vc2017\glfw3dll.lib" />
-    <Library Include="Dependencies\GLFW\lib-vc2017\glfw3.lib" />
-    <Library Include="Dependencies\GLFW\lib-vc2017\glfw3_mt.lib" />
   </ItemGroup>
 </Project>

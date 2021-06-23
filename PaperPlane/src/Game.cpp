@@ -27,6 +27,9 @@ void Game::Init()
 	plane = Plane();
 	plane.Init();
 
+	coin = Coin();
+	coin.Init();
+
 	InitSkybox();
 }
 

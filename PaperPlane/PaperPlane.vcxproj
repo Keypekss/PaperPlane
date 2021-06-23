@@ -550,7 +550,6 @@
     <None Include="Dependencies\ASSIMP\include\assimp\SmoothingGroups.inl" />
     <None Include="Dependencies\ASSIMP\include\assimp\vector2.inl" />
     <None Include="Dependencies\ASSIMP\include\assimp\vector3.inl" />
-    <None Include="Dependencies\GLFW\lib-vc2017\glfw3.dll" />
     <None Include="Dependencies\GLM\glm\detail\func_common.inl" />
     <None Include="Dependencies\GLM\glm\detail\func_common_simd.inl" />
     <None Include="Dependencies\GLM\glm\detail\func_exponential.inl" />
@@ -700,11 +699,6 @@
     <None Include="Shaders\silhouette.vert" />
     <None Include="Shaders\skybox.frag" />
     <None Include="Shaders\skybox.vert" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="Dependencies\GLFW\lib-vc2017\glfw3.lib" />
-    <Library Include="Dependencies\GLFW\lib-vc2017\glfw3dll.lib" />
-    <Library Include="Dependencies\GLFW\lib-vc2017\glfw3_mt.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
