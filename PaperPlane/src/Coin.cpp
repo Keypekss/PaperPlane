@@ -8,17 +8,8 @@ void Coin::Init()
 	CoinModel.loadModel("Resources/Models/coin/scene.gltf");
 }
 
-void Coin::DrawCoin(Shader coinShader, Camera& camera, float deltaTime, unsigned int enumPos)
+void Coin::GenerateCoin(unsigned int enumPos, float depth)
 {
-	coinShader.use();
-
-	glm::mat4 view = camera.GetViewMatrix();
-	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), 1280.0f / 720.0f, 0.1f, 100.0f);
-	coinShader.setMat4("view", view);
-	coinShader.setMat4("projection", projection);
-
-	glm::mat4 model = glm::mat4(1.0f);
-
 	struct CoinPos {
 		glm::vec3 BOTTOM_LEFT	= glm::vec3(1.5f, 1.5f, 0.0f);
 		glm::vec3 BOTTOM_MID	= glm::vec3(4.5f, 1.5f, 0.0f);
@@ -30,8 +21,8 @@ void Coin::DrawCoin(Shader coinShader, Camera& camera, float deltaTime, unsigned
 		glm::vec3 TOP_MID		= glm::vec3(4.5f, 7.5f, 0.0f);
 		glm::vec3 TOP_RIGHT		= glm::vec3(7.5f, 7.5f, 0.0f);
 	} pos;
-
-	glm::vec3 coinPos;
+		
+	
 	switch (enumPos) {
 	case 0:
 		coinPos = pos.BOTTOM_LEFT;
@@ -60,11 +51,26 @@ void Coin::DrawCoin(Shader coinShader, Camera& camera, float deltaTime, unsigned
 	case 8:
 		coinPos = pos.TOP_RIGHT;
 		break;
-	default:	
+	default:
 		coinPos = glm::vec3(0.0f);
 		std::cout << "Error: Shouldn't reach here" << std::endl;
 		break;
 	}
+
+	// set depth
+	coinPos.z += depth;
+}
+
+void Coin::DrawCoin(Shader coinShader, Camera& camera, float deltaTime)
+{
+	coinShader.use();
+
+	glm::mat4 view = camera.GetViewMatrix();
+	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), 1280.0f / 720.0f, 0.1f, 100.0f);
+	coinShader.setMat4("view", view);
+	coinShader.setMat4("projection", projection);
+
+	glm::mat4 model = glm::mat4(1.0f);	
 	
 	model = glm::translate(model, coinPos);
 	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));

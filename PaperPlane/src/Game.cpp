@@ -27,9 +27,6 @@ void Game::Init()
 	plane = Plane();
 	plane.Init();
 
-	coin = Coin();
-	coin.Init();
-
 	InitSkybox();
 }
 
@@ -171,7 +168,7 @@ void Game::GenerateRooms(Camera &camera)
 	}
 
 	for (auto & Room : Rooms) {
-		Room.DrawDebugCube(*LineRenderer, *BlockRenderer ,camera);
+		Room.DrawDebugCube(*LineRenderer, *BlockRenderer ,camera);			
 	}
 }
 
@@ -188,6 +185,11 @@ void Game::Render(float deltaTime, Camera &camera)
 {
 	GenerateRooms(camera);
 	RemoveRoom(camera);
+	for (auto& room : Rooms) {
+		for (auto& coin : room.GetCoins()) {
+			coin.DrawCoin(coinShader, camera, deltaTime);
+		}
+	}
 	plane.drawPlane(modelShader, camera);
 	plane.drawSilhouette(silhouetteShader, camera);
 	plane.drawCollisionBox(*LineRenderer, camera);

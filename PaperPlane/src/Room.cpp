@@ -40,7 +40,7 @@ void Room::DrawDebugCube(SpriteRenderer& lineRenderer, SpriteRenderer& blockRend
 		lineRenderer.DrawLine(RPos, startPos, endPos, glm::vec3(1.0f, 0.0f, 0.0f), camera);
 	}
 
-	for (auto block : blocks) {
+	for (auto& block : Blocks) {
 		block.DrawBlock(blockRenderer ,camera);
 	}
 }
@@ -53,16 +53,16 @@ bool operator==(const Block& lhs, const Block& rhs)
 void Room::GenerateRoom(unsigned int difficulty)
 {	
 	// difficulty equals to number of blocks in a room
-	if(blocks.empty()){
-		while(blocks.size() < difficulty){
+	if(Blocks.empty()){
+		while(Blocks.size() < difficulty){
 			Block block;
 			block.GenerateBlock(RPos);
 			// push_back if generated block is in different position
-			if (blocks.end() == std::find_if(blocks.begin(), blocks.end(), [&](Block blk) { return block == blk; })) {				
+			if (Blocks.end() == std::find_if(Blocks.begin(), Blocks.end(), [&](Block blk) { return block == blk; })) {				
 				unsigned int sameDepth1 = 0; // blocks with same depth value
-				unsigned int sameDepth2 = 0; // blocks with same depth value
-				unsigned int sameDepth3 = 0; // blocks with same depth value
-				for (const auto& block : blocks) {
+				unsigned int sameDepth2 = 0;
+				unsigned int sameDepth3 = 0;
+				for (const auto& block : Blocks) {
 					if (block.GetPos().z == RPos.z - 4.0f)
 						sameDepth1++;
 					if (block.GetPos().z == RPos.z - 10.0f)
@@ -72,8 +72,14 @@ void Room::GenerateRoom(unsigned int difficulty)
 				}
 				// be sure that the path is not completely blocked. (completely blocked path has 9 blocks)
 				if (sameDepth1 <= 8 && sameDepth1 <= 8 && sameDepth1 <= 8) {
-					blocks.push_back(block);
-					blockEnumPos.push_back(block.GetEnumPos());
+					Blocks.push_back(block);
+					/*blockEnumPos.push_back(block.GetEnumPos());*/	
+					if (block.GetPos().z == RPos.z - 4.0f)
+						blockEnumPos4.push_back(block.GetEnumPos());
+					if (block.GetPos().z == RPos.z - 10.0f)
+						blockEnumPos10.push_back(block.GetEnumPos());
+					if (block.GetPos().z == RPos.z - 16.0f)
+						blockEnumPos16.push_back(block.GetEnumPos());
 				}
 			}
 		}		
@@ -85,23 +91,14 @@ void Room::GenerateRoom(unsigned int difficulty)
 void Room::GenerateCoins()
 {
 	std::vector<unsigned int> allPos = { 0,1,2,3,4,5,6,7,8 }; // all possible enum positions for a block or a coin
-	std::vector<unsigned int> coinPos(9); // possible coin positions
-	std::vector<unsigned int> selectedPos;
-
-// 	std::cout << "Block Pos: ";
-// 	for (auto pos : blockEnumPos)
-// 		std::cout << pos << "	";
-// 	std::cout << std::endl;
-// 	std::cout << std::endl;
-
-	std::sort(blockEnumPos.begin(), blockEnumPos.end());
-	std::set_difference(allPos.begin(), allPos.end(), blockEnumPos.begin(), blockEnumPos.begin() + 9, coinPos.begin()); // determine enum positions where there are not blocks
+	std::vector<unsigned int> coinPos(9); // possible coin positions (filled with 9 zeros)
+	std::vector<unsigned int> selectedPos; // where coin will spawn at
+		
+	std::sort(blockEnumPos4.begin(), blockEnumPos4.end());		
+	auto it = std::set_difference(allPos.begin(), allPos.end(), blockEnumPos4.begin(), blockEnumPos4.end(), coinPos.begin()); // determine enum positions where there are not blocks
 	
-// 	std::cout << "coin Pos: ";
-// 	for (auto pos : coinPos)
-// 		std::cout << pos << "	";
-// 	std::cout << std::endl;
-																												  
+	coinPos.resize(it - coinPos.begin()); // erase the zeros at the end
+
 	// get a random coin position from possible coin position vector
 	std::sample(
 		coinPos.begin(),
@@ -110,9 +107,11 @@ void Room::GenerateCoins()
 		1,
 		std::mt19937{ std::random_device{}() }
 	);
-	
-	coinPos.push_back(selectedPos.at(0));
-//  	std::cout << selectedPos.at(0) << std::endl;
+
+	Coin coin;
+// 	coin.Init();
+	coin.GenerateCoin(selectedPos.at(0), RPos.z - 4.0f);
+	Coins.push_back(coin);
 }
 
 glm::vec3 Room::GetPos() const
@@ -127,7 +126,12 @@ int Room::GetDepth() const
 
 std::vector<Block> Room::GetBlocks() const
 {
-	return blocks;
+	return Blocks;
+}
+
+std::vector<Coin> Room::GetCoins() const
+{
+	return Coins;
 }
 
 Room::~Room()

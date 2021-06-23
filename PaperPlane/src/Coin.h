@@ -6,11 +6,12 @@
 class Coin {
 public:
 	void Init();
-	void DrawCoin(Shader coinShader, Camera& camera, float deltaTime, unsigned int enumPos);
+	void GenerateCoin(unsigned int enumPos, float depth);
+	void DrawCoin(Shader coinShader, Camera& camera, float deltaTime);
 
 private:
 	float angularSpeed = 0.0f; // coin's rotating speed
-	
+	glm::vec3 coinPos;
 
 	Model CoinModel;
 

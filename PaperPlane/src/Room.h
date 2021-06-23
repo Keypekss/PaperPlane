@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+
 #include <glm/glm.hpp>
 
 #include "SpriteRenderer.h"
@@ -19,13 +21,17 @@ public:
 	glm::vec3 GetPos() const;
 	int GetDepth() const;
 	std::vector<Block> GetBlocks() const;
-	std::vector<unsigned int> coinEnumPos;
+	std::vector<Coin> GetCoins() const;
 	~Room();
 private:
-	std::vector<Block> blocks;
-	Coin coin;
-	std::vector<unsigned int> blockEnumPos;
-	
+	std::vector<Block> Blocks;
+	std::vector<Coin> Coins;
+
+	// i hate myself for writing this
+	std::vector<unsigned int> blockEnumPos4;
+	std::vector<unsigned int> blockEnumPos10;
+	std::vector<unsigned int> blockEnumPos16;
+
 	// room dimensions
 	int RWidth, RHeight, RDepth;
 
