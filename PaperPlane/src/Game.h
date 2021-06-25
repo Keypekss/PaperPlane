@@ -42,6 +42,7 @@ private:
 	void Clear();	
 	
 	unsigned int RoomCount = 5;		
+	float angularSpeed = 0.0f;
 	std::vector<Room> Rooms;
 	glm::vec3 previousPlanePos = plane.InitialPlanePos;
 };

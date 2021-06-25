@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{5CD88526-7E24-45CB-94A2-C66E6AA78AD3}</ProjectGuid>
     <RootNamespace>PaperPlane</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -81,7 +81,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>%(SolutionDir)Dependencies\ASSIMP\lib;%(SolutionDir)Dependencies\GLFW\lib-vc2017</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)PaperPlane\Dependencies\ASSIMP\lib;$(SolutionDir)PaperPlane\Dependencies\GLFW\lib-vc2017</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;assimp-vc141-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -111,7 +111,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>%(SolutionDir)Dependencies\ASSIMP\lib;%(SolutionDir)Dependencies\GLFW\lib-vc2017</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)PaperPlane\Dependencies\ASSIMP\lib;$(SolutionDir)PaperPlane\Dependencies\GLFW\lib-vc2017</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;assimp-vc141-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -541,7 +541,6 @@
     <ClInclude Include="src\Texture.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assimp-vc141-mt.dll" />
     <None Include="Dependencies\ASSIMP\include\assimp\color4.inl" />
     <None Include="Dependencies\ASSIMP\include\assimp\material.inl" />
     <None Include="Dependencies\ASSIMP\include\assimp\matrix3x3.inl" />

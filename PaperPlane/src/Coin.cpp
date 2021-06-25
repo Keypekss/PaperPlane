@@ -61,7 +61,7 @@ void Coin::GenerateCoin(unsigned int enumPos, float depth)
 	coinPos.z += depth;
 }
 
-void Coin::DrawCoin(Shader coinShader, Camera& camera, float deltaTime)
+void Coin::DrawCoin(Shader coinShader, Camera& camera, float deltaTime, float angle)
 {
 	coinShader.use();
 
@@ -75,8 +75,7 @@ void Coin::DrawCoin(Shader coinShader, Camera& camera, float deltaTime)
 	model = glm::translate(model, coinPos);
 	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-	angularSpeed += 90.0f * deltaTime;
-	model = glm::rotate(model, glm::radians(angularSpeed), glm::vec3(0.0, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0, 0.0f, 1.0f));
 
 	coinShader.setMat4("model", model);
 

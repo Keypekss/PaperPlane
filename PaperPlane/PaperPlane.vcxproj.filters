@@ -1669,7 +1669,6 @@
     <None Include="Dependencies\GLM\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="assimp-vc141-mt.dll" />
     <None Include="imgui.ini" />
     <None Include="Shaders\skybox.vert" />
     <None Include="Shaders\modelShader.frag" />

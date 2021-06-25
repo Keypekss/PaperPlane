@@ -190,7 +190,7 @@ void Game::Render(float deltaTime, Camera &camera)
 	RemoveRoom(camera);
 	for (auto& room : Rooms) {
 		for (auto& coin : room.GetCoins()) {
-			coin.DrawCoin(coinShader, camera, deltaTime);
+			coin.DrawCoin(coinShader, camera, deltaTime, angularSpeed);
 		}
 	}
 	plane.drawPlane(modelShader, camera);
@@ -304,6 +304,7 @@ void Game::Move(Camera& camera, float deltaTime, float moveBy, int dir)
 
 void Game::Update(float deltaTime, Camera& camera)
 {
+	angularSpeed += 90.0f * deltaTime;
 	Render(deltaTime, camera);
 	ProcessInput(deltaTime, camera);
 	DoCollisions();

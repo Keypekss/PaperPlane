@@ -109,7 +109,6 @@ void Room::GenerateCoins()
 	);
 
 	Coin coin;
-// 	coin.Init();
 	coin.GenerateCoin(selectedPos.at(0), RPos.z - 4.0f);
 	Coins.push_back(coin);
 }
