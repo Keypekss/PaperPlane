@@ -59,6 +59,10 @@ void Coin::GenerateCoin(unsigned int enumPos, float depth)
 
 	// set depth
 	coinPos.z += depth;
+
+	// set collision box pos
+	coinCBPos = coinPos; // set collision box pos to middle of the model
+	coinCBPos -= glm::vec3(0.4f, 0.4f, -1.2f); // move it to bottom left of the model
 }
 
 void Coin::DrawCoin(Shader coinShader, Camera& camera, float deltaTime, float angle)
@@ -80,4 +84,36 @@ void Coin::DrawCoin(Shader coinShader, Camera& camera, float deltaTime, float an
 	coinShader.setMat4("model", model);
 
 	CoinModel.render(coinShader, false);
+}
+
+void Coin::DrawCBox(SpriteRenderer& lineRenderer, Camera& camera)
+{
+	std::vector<std::vector<glm::vec3>> vertices{
+		// first point										// second point
+		{glm::vec3(0,			0,			0),				glm::vec3(CBoxWidth,	0,			0)}, // front
+		{glm::vec3(0,			0,			0),				glm::vec3(0,			CBoxHeight,	0)},
+		{glm::vec3(0,			CBoxHeight,	0),				glm::vec3(CBoxWidth,	CBoxHeight,	0)},
+		{glm::vec3(CBoxWidth,	CBoxHeight,	0),				glm::vec3(CBoxWidth,	0,			0)},
+
+		{glm::vec3(0,			0,			0),				glm::vec3(0,			0,			-CBoxDepth)}, // sides
+		{glm::vec3(0,			CBoxHeight,	0),				glm::vec3(0,			CBoxHeight,	-CBoxDepth)},
+		{glm::vec3(CBoxWidth,	CBoxHeight,	0),				glm::vec3(CBoxWidth,	CBoxHeight,	-CBoxDepth)},
+		{glm::vec3(CBoxWidth,	0,			0),				glm::vec3(CBoxWidth,	0,			-CBoxDepth)},
+
+		{glm::vec3(0,			0,			-CBoxDepth),	glm::vec3(CBoxWidth,	0,			-CBoxDepth)}, // back
+		{glm::vec3(0,			0,			-CBoxDepth),	glm::vec3(0,			CBoxHeight,	-CBoxDepth)},
+		{glm::vec3(0,			CBoxHeight,	-CBoxDepth),	glm::vec3(CBoxWidth,	CBoxHeight,	-CBoxDepth)},
+		{glm::vec3(CBoxWidth,	CBoxHeight,	-CBoxDepth),	glm::vec3(CBoxWidth,	0,			-CBoxDepth)}
+	};
+
+	for (size_t i = 0; i < vertices.size(); i++) {
+		glm::vec3 startPos = vertices.at(i).at(0);
+		glm::vec3 endPos = vertices.at(i).at(1);
+		lineRenderer.DrawLine(coinCBPos, startPos, endPos, glm::vec3(1.0f, 0.0f, 1.0f), camera);
+	}
+}
+
+glm::vec3 Coin::GetCoinPos()
+{
+	return coinPos;
 }

@@ -128,11 +128,6 @@ std::vector<Block> Room::GetBlocks() const
 	return Blocks;
 }
 
-std::vector<Coin> Room::GetCoins() const
-{
-	return Coins;
-}
-
 Room::~Room()
 = default;
 

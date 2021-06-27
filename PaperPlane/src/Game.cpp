@@ -189,8 +189,9 @@ void Game::Render(float deltaTime, Camera &camera)
 	GenerateRooms(camera);
 	RemoveRoom(camera);
 	for (auto& room : Rooms) {
-		for (auto& coin : room.GetCoins()) {
+		for (auto& coin : room.Coins) {
 			coin.DrawCoin(coinShader, camera, deltaTime, angularSpeed);
+			coin.DrawCBox(*LineRenderer, camera);
 		}
 	}
 	plane.drawPlane(modelShader, camera);
@@ -206,9 +207,9 @@ bool flag4 = false;
 void Game::ProcessInput(float deltaTime, Camera& camera)
 {
 	// move plane and camera forward
-// 	plane.PlanePos.y -= 5.0f * deltaTime;
-// 	plane.CBoxPos.z -= 5.0f * deltaTime;
-// 	camera.Position.z -= 5.0f * deltaTime;
+	plane.PlanePos.y -= 5.0f * deltaTime;
+	plane.CBoxPos.z -= 5.0f * deltaTime;
+	camera.Position.z -= 5.0f * deltaTime;
 	
 	// plane controls
 	if (flag1 || Keys[GLFW_KEY_UP] && !KeysProcessed[GLFW_KEY_UP]) {
@@ -306,8 +307,8 @@ void Game::Update(float deltaTime, Camera& camera)
 {
 	angularSpeed += 90.0f * deltaTime;
 	Render(deltaTime, camera);
-	ProcessInput(deltaTime, camera);
 	DoCollisions();
+	ProcessInput(deltaTime, camera);	
 }
 
 bool Game::CheckCollision(Plane& plane, Block& block)
@@ -330,6 +331,23 @@ bool Game::CheckCollision(Plane& plane, Block& block)
 	return collisionX && collisionY && collisionZ;
 }
 
+bool Game::CheckCollision(Plane& plane, Coin& coin)
+{	
+	// collision x-axis?
+	bool collisionX = plane.CBoxPos.x + coin.CBoxWidth + plane.CBoxWidth >= coin.GetCoinPos().x &&
+		coin.GetCoinPos().x + coin.CBoxWidth >= plane.CBoxPos.x;
+	// collision y-axis?
+	bool collisionY = plane.CBoxPos.y + coin.CBoxHeight + plane.CBoxHeight >= coin.GetCoinPos().y &&
+		coin.GetCoinPos().y + coin.CBoxHeight >= plane.CBoxPos.y;
+
+	// collision z-axis?
+	bool collisionZ = plane.CBoxPos.z - plane.CBoxDepth <= coin.GetCoinPos().z &&
+		coin.GetCoinPos().z - coin.CBoxDepth <= plane.CBoxPos.z;
+
+	// collision only if on both axes
+	return collisionX && collisionY && collisionZ;
+}
+
 void Game::DoCollisions()
 {	
 	// check collisions with the blocks only in the first room
@@ -339,6 +357,13 @@ void Game::DoCollisions()
 			;
 	}
 
+	// iterate over coins in the first room 
+	for (int i = 0; i < Rooms.at(0).Coins.size(); ++i) {
+		if (CheckCollision(plane, Rooms.at(0).Coins.at(i))) { // collision between the plane and coin in the first room
+			Rooms.at(0).Coins.erase(Rooms.at(0).Coins.begin() + i); // destroy coin if collision exists
+			std::cout << "collide." << std::endl;
+		}
+	}
 }
 
 Game::~Game()

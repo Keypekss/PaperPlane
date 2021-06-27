@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 
 #include <glm/glm.hpp>
 
@@ -21,11 +20,12 @@ public:
 	glm::vec3 GetPos() const;
 	int GetDepth() const;
 	std::vector<Block> GetBlocks() const;
-	std::vector<Coin> GetCoins() const;
+	std::vector<Coin> Coins;
+
 	~Room();
 private:
 	std::vector<Block> Blocks;
-	std::vector<Coin> Coins;
+	
 
 	// i hate myself for writing this
 	std::vector<unsigned int> blockEnumPos4;

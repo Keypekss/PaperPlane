@@ -31,6 +31,7 @@ public:
 	void ProcessInput(float deltaTime, Camera& camera);
 	void Update(float deltaTime, Camera& camera);
 	bool CheckCollision(Plane& plane, Block& block);
+	bool CheckCollision(Plane& plane, Coin& block);
 	void DoCollisions();
 	void Move(Camera& camera, float deltaTime, float moveBy, int dir);
 	Plane plane;
