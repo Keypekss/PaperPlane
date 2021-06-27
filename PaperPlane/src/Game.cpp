@@ -188,15 +188,15 @@ void Game::Render(float deltaTime, Camera &camera)
 {
 	GenerateRooms(camera);
 	RemoveRoom(camera);
+	plane.drawPlane(modelShader, camera);
+	plane.drawSilhouette(silhouetteShader, camera);
+	plane.drawCollisionBox(*LineRenderer, camera);
 	for (auto& room : Rooms) {
 		for (auto& coin : room.Coins) {
 			coin.DrawCoin(coinShader, camera, deltaTime, angularSpeed);
 			coin.DrawCBox(*LineRenderer, camera);
 		}
-	}
-	plane.drawPlane(modelShader, camera);
-	plane.drawSilhouette(silhouetteShader, camera);
-	plane.drawCollisionBox(*LineRenderer, camera);
+	}	
 	DrawSkybox(camera);	
 }
 
@@ -334,15 +334,15 @@ bool Game::CheckCollision(Plane& plane, Block& block)
 bool Game::CheckCollision(Plane& plane, Coin& coin)
 {	
 	// collision x-axis?
-	bool collisionX = plane.CBoxPos.x + coin.CBoxWidth + plane.CBoxWidth >= coin.GetCoinPos().x &&
-		coin.GetCoinPos().x + coin.CBoxWidth >= plane.CBoxPos.x;
+	bool collisionX = plane.CBoxPos.x + coin.CBoxWidth + plane.CBoxWidth >= coin.GetCoinCBPos().x &&
+		coin.GetCoinCBPos().x + coin.CBoxWidth >= plane.CBoxPos.x;
 	// collision y-axis?
-	bool collisionY = plane.CBoxPos.y + coin.CBoxHeight + plane.CBoxHeight >= coin.GetCoinPos().y &&
-		coin.GetCoinPos().y + coin.CBoxHeight >= plane.CBoxPos.y;
+	bool collisionY = plane.CBoxPos.y + coin.CBoxHeight + plane.CBoxHeight >= coin.GetCoinCBPos().y &&
+		coin.GetCoinCBPos().y + coin.CBoxHeight >= plane.CBoxPos.y;
 
 	// collision z-axis?
-	bool collisionZ = plane.CBoxPos.z - plane.CBoxDepth <= coin.GetCoinPos().z &&
-		coin.GetCoinPos().z - coin.CBoxDepth <= plane.CBoxPos.z;
+	bool collisionZ = plane.CBoxPos.z - plane.CBoxDepth <= coin.GetCoinCBPos().z &&
+		coin.GetCoinCBPos().z - coin.CBoxDepth <= plane.CBoxPos.z;
 
 	// collision only if on both axes
 	return collisionX && collisionY && collisionZ;
