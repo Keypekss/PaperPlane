@@ -16,6 +16,12 @@ enum Directions {
 	DIR_RIGHT
 };
 
+enum GameState {
+	MENU,
+	START,
+	GAME_OVER
+};
+
 class Game {
 public:
 	Game() = default;
@@ -28,8 +34,10 @@ public:
 	void GenerateRooms(Camera &camera);
 	void RemoveRoom(Camera &camera);
 	void Render(float deltaTime, Camera &camera);
+	void RenderMenu();
+	void RenderUI();
 	void ProcessInput(float deltaTime, Camera& camera);
-	void Update(float deltaTime, Camera& camera);
+	void Update(float deltaTime, Camera& camera, GLFWwindow* window);
 	bool CheckCollision(Plane& plane, Block& block);
 	bool CheckCollision(Plane& plane, Coin& block);
 	void DoCollisions();
@@ -42,8 +50,11 @@ public:
 private:
 	void Clear();	
 	
-	unsigned int RoomCount = 5;		
-	float angularSpeed = 0.0f;
+	unsigned int RoomCount = 5;	
+	unsigned int Width = 1280, Height = 720;
+	unsigned int Score = 0;
+	float angularSpeed = 0.0f;	
+	GameState State;
 	std::vector<Room> Rooms;
 	glm::vec3 previousPlanePos = plane.InitialPlanePos;
 };

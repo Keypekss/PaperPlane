@@ -1,9 +1,11 @@
 #include "Game.h"
 #include "SpriteRenderer.h"
 #include "stb_image.h"
+#include "TextRenderer.h"
 
 SpriteRenderer* LineRenderer;
 SpriteRenderer* BlockRenderer;
+TextRenderer*	Text;
 
 Shader modelShader;
 Shader coinShader;
@@ -27,10 +29,19 @@ void Game::Init()
 	plane = Plane();
 	plane.Init();
 
+	// initialize coin
 	coin = Coin();
 	coin.Init();
 
+	// initialize skybox
 	InitSkybox();
+
+	// initialize text
+	Text = new TextRenderer(this->Width, this->Height);
+	Text->Load("Resources/fonts/OCRAEXT.TTF", 24);
+
+	// initial state
+	State = MENU;
 }
 
 unsigned int skyboxVAO = 0, skyboxVBO = 0, cubemapTexture = 0;
@@ -200,6 +211,25 @@ void Game::Render(float deltaTime, Camera &camera)
 	DrawSkybox(camera);	
 }
 
+void Game::RenderMenu()
+{	
+	Text->RenderText("CONTROLS:",							this->Width / 2 - 450, this->Height / 2.0f - 190.0f, 1.0f);
+	Text->RenderText("USE ARROW KEYS TO MOVE",				this->Width / 2 - 450, this->Height / 2.0f - 170.0f, 1.0f);
+	Text->RenderText("CTRL TO TAKE CONTROL OF MOUSE",		this->Width / 2 - 450, this->Height / 2.0f - 150.0f, 1.0f);
+	Text->RenderText("WASD TO MOVE CAMERA INDEPENDENTLY",	this->Width / 2 - 450, this->Height / 2.0f - 130.0f, 1.0f);
+	Text->RenderText("ESC to exit",							this->Width / 2 - 450, this->Height / 2.0f - 110.0f, 1.0f);
+	Text->RenderText("PRESS ENTER TO START THE GAME",		this->Width / 2 - 450, this->Height / 2.0f - 90.0f, 1.0f);
+}
+
+void Game::RenderUI()
+{	
+	std::stringstream ss; ss << this->Score;
+	Text->RenderText("SCORE: " + ss.str(), this->Width / 2 - 0, this->Height / 2.0f - 300.0f, 1.0f);
+	if (State == GAME_OVER) {
+		Text->RenderText("Game Over", this->Width / 2 - 300, this->Height / 2.0f - 130.0f, 1.0f);
+	}
+}
+
 bool flag1 = false;
 bool flag2 = false;
 bool flag3 = false;
@@ -207,11 +237,14 @@ bool flag4 = false;
 void Game::ProcessInput(float deltaTime, Camera& camera)
 {
 	// move plane and camera forward
-	plane.PlanePos.y -= 5.0f * deltaTime;
-	plane.CBoxPos.z -= 5.0f * deltaTime;
-	camera.Position.z -= 5.0f * deltaTime;
-	
+	if (State == START) {
+		plane.PlanePos.y -= 5.0f * deltaTime;
+		plane.CBoxPos.z -= 5.0f * deltaTime;
+		camera.Position.z -= 5.0f * deltaTime;
+	}
 	// plane controls
+	{
+
 	if (flag1 || Keys[GLFW_KEY_UP] && !KeysProcessed[GLFW_KEY_UP]) {
 		if (plane.PlanePos.z < previousPlanePos.z + 3.0f) { // move plane only by 3
 			if (plane.PlanePos.z < plane.InitialPlanePos.z + 3.0f) { // keeps plane in the bounding box
@@ -219,12 +252,12 @@ void Game::ProcessInput(float deltaTime, Camera& camera)
 				flag2 = false; // only one flag can be true at a time
 				flag3 = false;
 				flag4 = false;
-				Move(camera, deltaTime, 3.0f, DIR_UP);				
-			} 
+				Move(camera, deltaTime, 3.0f, DIR_UP);
+			}
 		} else {
 			flag1 = false;
 			previousPlanePos = plane.PlanePos;
-		}		
+		}
 		KeysProcessed[GLFW_KEY_UP] = true;
 	}
 	if (flag2 || Keys[GLFW_KEY_DOWN] && !KeysProcessed[GLFW_KEY_DOWN]) {
@@ -235,7 +268,7 @@ void Game::ProcessInput(float deltaTime, Camera& camera)
 				flag3 = false;
 				flag4 = false;
 				Move(camera, deltaTime, 3.0f, DIR_DOWN);
-			} 
+			}
 		} else {
 			flag2 = false;
 			previousPlanePos = plane.PlanePos;
@@ -250,7 +283,7 @@ void Game::ProcessInput(float deltaTime, Camera& camera)
 				flag2 = false;
 				flag4 = false;
 				Move(camera, deltaTime, 3.0f, DIR_LEFT);
-			} 
+			}
 		} else {
 			flag3 = false;
 			previousPlanePos = plane.PlanePos;
@@ -265,12 +298,19 @@ void Game::ProcessInput(float deltaTime, Camera& camera)
 				flag2 = false;
 				flag3 = false;
 				Move(camera, deltaTime, 3.0f, DIR_RIGHT);
-			} 
+			}
 		} else {
 			flag4 = false;
 			previousPlanePos = plane.PlanePos;
 		}
 		KeysProcessed[GLFW_KEY_RIGHT] = true;
+	}
+}
+
+	// change game state
+	if (Keys[GLFW_KEY_ENTER] && !KeysProcessed[GLFW_KEY_ENTER]) {
+		KeysProcessed[GLFW_KEY_ENTER] = true;
+		State = START;
 	}
 }
 
@@ -303,12 +343,25 @@ void Game::Move(Camera& camera, float deltaTime, float moveBy, int dir)
 	}
 }
 
-void Game::Update(float deltaTime, Camera& camera)
+void Game::Update(float deltaTime, Camera& camera, GLFWwindow* window)
 {
-	angularSpeed += 90.0f * deltaTime;
-	Render(deltaTime, camera);
-	DoCollisions();
-	ProcessInput(deltaTime, camera);	
+	if (State == MENU) {
+		RenderMenu();
+		ProcessInput(deltaTime, camera);
+	} else if (State == START) {
+		angularSpeed += 90.0f * deltaTime;
+		Render(deltaTime, camera);
+		DoCollisions();
+		ProcessInput(deltaTime, camera);
+		RenderUI();
+	} else if (State == GAME_OVER) {
+		angularSpeed += 90.0f * deltaTime;
+		Render(deltaTime, camera);
+		DoCollisions();
+		ProcessInput(deltaTime, camera);
+		RenderUI();
+	}
+
 }
 
 bool Game::CheckCollision(Plane& plane, Block& block)
@@ -353,15 +406,14 @@ void Game::DoCollisions()
 	// check collisions with the blocks only in the first room
 	for (Block& block : Rooms.at(0).GetBlocks()) {		
 		if (CheckCollision(plane, block))
-			// std::cout << "Plane collided." << std::endl;
-			;
+			State = GAME_OVER;
 	}
 
 	// iterate over coins in the first room 
-	for (int i = 0; i < Rooms.at(0).Coins.size(); ++i) {
+	for (unsigned int i = 0; i < Rooms.at(0).Coins.size(); ++i) {
 		if (CheckCollision(plane, Rooms.at(0).Coins.at(i))) { // collision between the plane and coin in the first room
 			Rooms.at(0).Coins.erase(Rooms.at(0).Coins.begin() + i); // destroy coin if collision exists
-			std::cout << "collide." << std::endl;
+			Score += 10;
 		}
 	}
 }
@@ -370,6 +422,7 @@ Game::~Game()
 {
 	delete LineRenderer;
 	delete BlockRenderer;
+	delete Text;
 }
 
 void Game::Clear()

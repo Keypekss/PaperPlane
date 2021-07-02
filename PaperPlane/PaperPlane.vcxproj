@@ -76,13 +76,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)PaperPlane\Dependencies\GLFW\include;$(SolutionDir)PaperPlane\Dependencies\GLAD\include;$(SolutionDir)PaperPlane\Dependencies\GLM\;$(SolutionDir)PaperPlane\Dependencies\ASSIMP\include;$(SolutionDir)PaperPlane\Dependencies\IMGUI</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PaperPlane\Dependencies\GLFW\include;$(SolutionDir)PaperPlane\Dependencies\GLAD\include;$(SolutionDir)PaperPlane\Dependencies\GLM\;$(SolutionDir)PaperPlane\Dependencies\ASSIMP\include;$(SolutionDir)PaperPlane\Dependencies\IMGUI;$(SolutionDir)PaperPlane\Dependencies\FREETYPE\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)PaperPlane\Dependencies\ASSIMP\lib;$(SolutionDir)PaperPlane\Dependencies\GLFW\lib-vc2017</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;assimp-vc141-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)PaperPlane\Dependencies\ASSIMP\lib;$(SolutionDir)PaperPlane\Dependencies\GLFW\lib-vc2017;$(SolutionDir)PaperPlane\Dependencies\FREETYPE\lib\win32</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;assimp-vc141-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -104,15 +104,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)PaperPlane\Dependencies\GLFW\include;$(SolutionDir)PaperPlane\Dependencies\GLAD\include;$(SolutionDir)PaperPlane\Dependencies\GLM\;$(SolutionDir)PaperPlane\Dependencies\ASSIMP\include;$(SolutionDir)PaperPlane\Dependencies\IMGUI</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PaperPlane\Dependencies\GLFW\include;$(SolutionDir)PaperPlane\Dependencies\GLAD\include;$(SolutionDir)PaperPlane\Dependencies\GLM\;$(SolutionDir)PaperPlane\Dependencies\ASSIMP\include;$(SolutionDir)PaperPlane\Dependencies\IMGUI;$(SolutionDir)PaperPlane\Dependencies\FREETYPE\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)PaperPlane\Dependencies\ASSIMP\lib;$(SolutionDir)PaperPlane\Dependencies\GLFW\lib-vc2017</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;assimp-vc141-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)PaperPlane\Dependencies\ASSIMP\lib;$(SolutionDir)PaperPlane\Dependencies\GLFW\lib-vc2017;$(SolutionDir)PaperPlane\Dependencies\FREETYPE\lib\win32</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;assimp-vc141-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -153,6 +153,7 @@
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\TextRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Coin.h" />
@@ -539,6 +540,7 @@
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\TextRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Dependencies\ASSIMP\include\assimp\color4.inl" />
@@ -698,6 +700,8 @@
     <None Include="Shaders\silhouette.vert" />
     <None Include="Shaders\skybox.frag" />
     <None Include="Shaders\skybox.vert" />
+    <None Include="Shaders\text.frag" />
+    <None Include="Shaders\text.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

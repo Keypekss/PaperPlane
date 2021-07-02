@@ -39,7 +39,7 @@ float lastFrame = 0.0f;
 
 // ImGUI state
 // ----------------------------------------------	
-ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+ImVec4 clearColor = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
 // paperPlane
 glm::vec3	PRotAxis	= glm::vec3(1.0f, 0.0f, 0.0f);
 float		PRotAngle	= 180;
@@ -84,6 +84,8 @@ int main()
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// initialize ImGUI
 	IMGUI_CHECKVERSION();
@@ -92,7 +94,7 @@ int main()
 	ImGui::StyleColorsDark();
 	ImGui_ImplOpenGL3_Init((char*)glGetString(330));
 	
-	planeGame.Init();
+	planeGame.Init();	
 
 	//render loop
 	while (!glfwWindowShouldClose(mainWindow)) {
@@ -113,7 +115,7 @@ int main()
 		glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	
 
-		planeGame.Update(deltaTime, camera);
+		planeGame.Update(deltaTime, camera, mainWindow);
 
 		// ImGui
 		// ----------------------------------------------	
@@ -198,6 +200,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 // ----------------------------------------------------------------------
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	// move camera freely for debug purposes
 	if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS && enableCameraMovement) {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		enableCameraMovement = false;
@@ -211,7 +214,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		camera.Position = CTranslate;
 		camera.ProcessMouseMovement(CRotYaw, CRotPitch);
 	}
+	
+	if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
+		planeGame.Keys[GLFW_KEY_ENTER] = true;
+		planeGame.KeysProcessed[GLFW_KEY_ENTER] = false;
+	}
 
+	// store control input
 	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
 		planeGame.Keys[GLFW_KEY_UP] = true;
 		planeGame.KeysProcessed[GLFW_KEY_UP] = false;

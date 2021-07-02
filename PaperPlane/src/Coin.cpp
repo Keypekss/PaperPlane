@@ -62,7 +62,7 @@ void Coin::GenerateCoin(unsigned int enumPos, float depth)
 
 	// set collision box pos
 	coinCBPos = coinPos; // set collision box pos to middle of the model
-	coinCBPos -= glm::vec3(0.4f, 0.4f, -0.4f); // move it to bottom left of the model
+	coinCBPos -= glm::vec3(0.6f, 0.6f, -0.6f); // move it to bottom left of the model
 }
 
 void Coin::DrawCoin(Shader coinShader, Camera& camera, float deltaTime, float angle)

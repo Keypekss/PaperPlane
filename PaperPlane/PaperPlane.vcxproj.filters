@@ -81,6 +81,9 @@
     <ClCompile Include="src\Coin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\TextRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\ASSIMP\include\assimp\Compiler\poppack1.h">
@@ -1235,6 +1238,9 @@
     <ClInclude Include="src\Coin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\TextRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Dependencies\ASSIMP\include\assimp\color4.inl">
@@ -1684,5 +1690,7 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Resources\Models\coin\scene.gltf" />
+    <None Include="Shaders\text.vert" />
+    <None Include="Shaders\text.frag" />
   </ItemGroup>
 </Project>

@@ -12,7 +12,7 @@ public:
 	void DrawCBox(SpriteRenderer& lineRenderer, Camera& camera);
 	glm::vec3 GetCoinPos();
 	glm::vec3 GetCoinCBPos();
-	float CBoxWidth = 0.8f, CBoxHeight = 0.8f, CBoxDepth = 0.8f;
+	float CBoxWidth = 1.2f, CBoxHeight = 1.2f, CBoxDepth = 1.2f;
 
 private:
 	glm::vec3 coinPos;
