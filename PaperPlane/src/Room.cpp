@@ -37,7 +37,7 @@ void Room::DrawDebugCube(SpriteRenderer& lineRenderer, SpriteRenderer& blockRend
 	for (size_t i = 0; i < vertices.size(); i++) {
 		glm::vec3 startPos = vertices.at(i).at(0);
 		glm::vec3 endPos = vertices.at(i).at(1);
-		lineRenderer.DrawLine(RPos, startPos, endPos, glm::vec3(1.0f, 0.0f, 0.0f), camera);
+		//lineRenderer.DrawLine(RPos, startPos, endPos, glm::vec3(1.0f, 0.0f, 0.0f), camera);
 	}
 
 	for (auto& block : Blocks) {

@@ -53,7 +53,7 @@ public:
 private:	
 	unsigned int RoomCount = 5;	
 	unsigned int Width = 1280, Height = 720;
-	unsigned int Score = 0;
+	float Score = 0;
 	unsigned int postprocessingVAO, postprocessingVBO, framebuffer, textureColorbuffer;
 	float angularSpeed = 0.0f;	
 	GameState State;

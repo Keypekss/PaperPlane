@@ -1,3 +1,5 @@
+#include <iomanip>
+
 #include "Game.h"
 #include "SpriteRenderer.h"
 #include "stb_image.h"
@@ -258,11 +260,11 @@ void Game::Render(float deltaTime, Camera &camera)
 	RemoveRoom(camera);
 	plane.drawPlane(modelShader, camera);
 	plane.drawSilhouette(silhouetteShader, camera);
-	plane.drawCollisionBox(*LineRenderer, camera);
+	//plane.drawCollisionBox(*LineRenderer, camera);
 	for (auto& room : Rooms) {
 		for (auto& coin : room.Coins) {
 			coin.DrawCoin(coinShader, camera, deltaTime, angularSpeed);
-			coin.DrawCBox(*LineRenderer, camera);
+			//coin.DrawCBox(*LineRenderer, camera);
 		}
 	}	
 	DrawSkybox(camera);	
@@ -280,8 +282,11 @@ void Game::RenderMenu()
 
 void Game::RenderUI()
 {	
-	std::stringstream ss; ss << this->Score;
-	Text->RenderText("SCORE: " + ss.str(), this->Width / 2 - 0, this->Height / 2.0f - 300.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+	std::stringstream ss;
+	ss << std::fixed;
+	ss.precision(0);
+	ss << this->Score;
+	Text->RenderText("SCORE: " + ss.str(), this->Width / 2 - 50, this->Height / 2.0f - 300.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
 	if (State == GAME_OVER) {
 		Text->RenderText("Game Over", this->Width / 2 - 300, this->Height / 2.0f - 130.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
 	}
@@ -415,6 +420,7 @@ void Game::Update(float deltaTime, Camera& camera, GLFWwindow* window)
 		DoCollisions();
 		ProcessInput(deltaTime, camera);
 		RenderUI();
+		Score += deltaTime;
 	} else if (State == GAME_OVER) {
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer); // bind custom framebuffer before rendering for vfx
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
