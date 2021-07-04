@@ -696,6 +696,8 @@
     <None Include="Shaders\line.vert" />
     <None Include="Shaders\modelShader.frag" />
     <None Include="Shaders\modelShader.vert" />
+    <None Include="Shaders\postprocessing.frag" />
+    <None Include="Shaders\postprocessing.vert" />
     <None Include="Shaders\silhouette.frag" />
     <None Include="Shaders\silhouette.vert" />
     <None Include="Shaders\skybox.frag" />

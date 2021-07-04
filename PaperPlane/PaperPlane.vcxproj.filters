@@ -1692,5 +1692,7 @@
     <None Include="Resources\Models\coin\scene.gltf" />
     <None Include="Shaders\text.vert" />
     <None Include="Shaders\text.frag" />
+    <None Include="Shaders\postprocessing.frag" />
+    <None Include="Shaders\postprocessing.vert" />
   </ItemGroup>
 </Project>

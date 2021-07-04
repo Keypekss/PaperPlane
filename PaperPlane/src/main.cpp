@@ -112,9 +112,6 @@ int main()
 		// input
 		processInput(mainWindow, deltaTime);		
 
-		glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	
-
 		planeGame.Update(deltaTime, camera, mainWindow);
 
 		// ImGui
@@ -143,6 +140,8 @@ int main()
 		glfwSwapBuffers(mainWindow);
 		glfwPollEvents();
 	}
+
+	planeGame.Clear();
 
 	// shutdown ImGUI
 	ImGui_ImplOpenGL3_Shutdown();

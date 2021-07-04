@@ -11,6 +11,7 @@ Shader modelShader;
 Shader coinShader;
 Shader silhouetteShader;
 Shader skyboxShader;
+Shader postprocessingShader;
 
 void Game::Init()
 {
@@ -24,6 +25,10 @@ void Game::Init()
 	coinShader			= Shader("Shaders/modelShader.vert", "Shaders/modelShader.frag");
 	silhouetteShader	= Shader("Shaders/silhouette.vert", "Shaders/silhouette.frag");	
 	skyboxShader		= Shader("Shaders/skybox.vert", "Shaders/skybox.frag");
+	postprocessingShader= Shader("Shaders/postprocessing.vert", "Shaders/postprocessing.frag");
+
+	// initialize custom framebuffer for grayscale rendering
+	InitFramebuffer(); 
 
 	// load models and set shader matrices
 	plane = Plane();
@@ -41,7 +46,7 @@ void Game::Init()
 	Text->Load("Resources/fonts/OCRAEXT.TTF", 24);
 
 	// initial state
-	State = MENU;
+	State = MENU;	
 }
 
 unsigned int skyboxVAO = 0, skyboxVBO = 0, cubemapTexture = 0;
@@ -115,6 +120,58 @@ void Game::InitSkybox()
 
 		skyboxShader.use();
 		skyboxShader.setInt("skybox", 1);
+	}
+}
+
+
+void Game::InitFramebuffer()
+{
+	if (postprocessingVAO == 0) {
+		float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+			// positions   // texCoords
+			-1.0f,  1.0f,  0.0f, 1.0f,
+			-1.0f, -1.0f,  0.0f, 0.0f,
+			 1.0f, -1.0f,  1.0f, 0.0f,
+
+			-1.0f,  1.0f,  0.0f, 1.0f,
+			 1.0f, -1.0f,  1.0f, 0.0f,
+			 1.0f,  1.0f,  1.0f, 1.0f
+		};
+
+		// screen quad VAO		
+		glGenVertexArrays(1, &postprocessingVAO);
+		glGenBuffers(1, &postprocessingVBO);
+		glBindVertexArray(postprocessingVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, postprocessingVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+		postprocessingShader.use();
+		postprocessingShader.setInt("screenTexture", 0);		
+
+		// framebuffer configuration		
+		glGenFramebuffers(1, &framebuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		// create a color attachment texture		
+		glGenTextures(1, &textureColorbuffer);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Width, Height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+		// create a renderbuffer object for depth and stencil attachment
+		unsigned int rbo;
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, Width, Height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			std::cout << "Error::Framebuffer: Framebuffer is not complete." << std::endl;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
 
@@ -224,9 +281,9 @@ void Game::RenderMenu()
 void Game::RenderUI()
 {	
 	std::stringstream ss; ss << this->Score;
-	Text->RenderText("SCORE: " + ss.str(), this->Width / 2 - 0, this->Height / 2.0f - 300.0f, 1.0f);
+	Text->RenderText("SCORE: " + ss.str(), this->Width / 2 - 0, this->Height / 2.0f - 300.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
 	if (State == GAME_OVER) {
-		Text->RenderText("Game Over", this->Width / 2 - 300, this->Height / 2.0f - 130.0f, 1.0f);
+		Text->RenderText("Game Over", this->Width / 2 - 300, this->Height / 2.0f - 130.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
 	}
 }
 
@@ -346,22 +403,37 @@ void Game::Move(Camera& camera, float deltaTime, float moveBy, int dir)
 void Game::Update(float deltaTime, Camera& camera, GLFWwindow* window)
 {
 	if (State == MENU) {
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		RenderMenu();
 		ProcessInput(deltaTime, camera);
 	} else if (State == START) {
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		angularSpeed += 90.0f * deltaTime;
 		Render(deltaTime, camera);
 		DoCollisions();
 		ProcessInput(deltaTime, camera);
 		RenderUI();
 	} else if (State == GAME_OVER) {
-		angularSpeed += 90.0f * deltaTime;
-		Render(deltaTime, camera);
-		DoCollisions();
-		ProcessInput(deltaTime, camera);
-		RenderUI();
-	}
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer); // bind custom framebuffer before rendering for vfx
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+		angularSpeed += 90.0f * deltaTime;
+		Render(deltaTime, camera);		
+		RenderUI();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0); // bind back to default framebuffer
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		postprocessingShader.use(); // render scene grayscale
+		glBindVertexArray(postprocessingVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+		glDrawArrays(GL_TRIANGLES, 0, 6);	
+	}
 }
 
 bool Game::CheckCollision(Plane& plane, Block& block)
@@ -427,5 +499,8 @@ Game::~Game()
 
 void Game::Clear()
 {
+	glDeleteVertexArrays(1, &postprocessingVAO);
+	glDeleteBuffers(1, &postprocessingVBO);
+	glDeleteFramebuffers(1, &framebuffer);
 }
 

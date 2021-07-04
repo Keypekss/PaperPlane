@@ -29,11 +29,12 @@ public:
 
 	void Init();
 	void InitSkybox();
+	void InitFramebuffer(); // custom framebuffer for rendering grayscale
 	void DrawSkybox(Camera& camera);	
 	unsigned int loadCubemap(std::vector<std::string> faces);
 	void GenerateRooms(Camera &camera);
 	void RemoveRoom(Camera &camera);
-	void Render(float deltaTime, Camera &camera);
+	void Render(float deltaTime, Camera &camera);	
 	void RenderMenu();
 	void RenderUI();
 	void ProcessInput(float deltaTime, Camera& camera);
@@ -42,17 +43,18 @@ public:
 	bool CheckCollision(Plane& plane, Coin& block);
 	void DoCollisions();
 	void Move(Camera& camera, float deltaTime, float moveBy, int dir);
+	void Clear();
+
 	Plane plane;
 	Coin coin;
 	bool Keys[1024];
 	bool KeysProcessed[1024];
 
-private:
-	void Clear();	
-	
+private:	
 	unsigned int RoomCount = 5;	
 	unsigned int Width = 1280, Height = 720;
 	unsigned int Score = 0;
+	unsigned int postprocessingVAO, postprocessingVBO, framebuffer, textureColorbuffer;
 	float angularSpeed = 0.0f;	
 	GameState State;
 	std::vector<Room> Rooms;
