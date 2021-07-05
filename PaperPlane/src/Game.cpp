@@ -125,7 +125,6 @@ void Game::InitSkybox()
 	}
 }
 
-
 void Game::InitFramebuffer()
 {
 	if (postprocessingVAO == 0) {
@@ -304,70 +303,69 @@ void Game::ProcessInput(float deltaTime, Camera& camera)
 		plane.CBoxPos.z -= 5.0f * deltaTime;
 		camera.Position.z -= 5.0f * deltaTime;
 	}
-	// plane controls
-	{
-
-	if (flag1 || Keys[GLFW_KEY_UP] && !KeysProcessed[GLFW_KEY_UP]) {
-		if (plane.PlanePos.z < previousPlanePos.z + 3.0f) { // move plane only by 3
-			if (plane.PlanePos.z < plane.InitialPlanePos.z + 3.0f) { // keeps plane in the bounding box
-				flag1 = true;
-				flag2 = false; // only one flag can be true at a time
-				flag3 = false;
-				flag4 = false;
-				Move(camera, deltaTime, 3.0f, DIR_UP);
-			}
-		} else {
-			flag1 = false;
-			previousPlanePos = plane.PlanePos;
-		}
-		KeysProcessed[GLFW_KEY_UP] = true;
-	}
-	if (flag2 || Keys[GLFW_KEY_DOWN] && !KeysProcessed[GLFW_KEY_DOWN]) {
-		if (plane.PlanePos.z > previousPlanePos.z - 3.0f) {
-			if (plane.PlanePos.z > plane.InitialPlanePos.z - 3.0f) {
-				flag2 = true;
+	// plane controls	
+	{		
+		if (flag1 || Keys[GLFW_KEY_UP] && !KeysProcessed[GLFW_KEY_UP]) {
+			if (plane.PlanePos.z < previousPlanePos.z + 3.0f) { // move plane only by 3
+				if (plane.PlanePos.z < plane.InitialPlanePos.z + 3.0f) { // keeps plane in the bounding box
+					flag1 = true;
+					flag2 = false; // only one flag can be true at a time
+					flag3 = false;
+					flag4 = false;
+					Move(camera, deltaTime, 3.0f, DIR_UP);
+				}
+			} else {
 				flag1 = false;
-				flag3 = false;
-				flag4 = false;
-				Move(camera, deltaTime, 3.0f, DIR_DOWN);
+				previousPlanePos = plane.PlanePos;
 			}
-		} else {
-			flag2 = false;
-			previousPlanePos = plane.PlanePos;
+			KeysProcessed[GLFW_KEY_UP] = true;
 		}
-		KeysProcessed[GLFW_KEY_DOWN] = true;
-	}
-	if (flag3 || Keys[GLFW_KEY_LEFT] && !KeysProcessed[GLFW_KEY_LEFT]) {
-		if (plane.PlanePos.x < previousPlanePos.x + 3.0f) {
-			if (plane.PlanePos.x < plane.InitialPlanePos.x + 3.0f) {
-				flag3 = true;
-				flag1 = false;
+		if (flag2 || Keys[GLFW_KEY_DOWN] && !KeysProcessed[GLFW_KEY_DOWN]) {
+			if (plane.PlanePos.z > previousPlanePos.z - 3.0f) {
+				if (plane.PlanePos.z > plane.InitialPlanePos.z - 3.0f) {
+					flag2 = true;
+					flag1 = false;
+					flag3 = false;
+					flag4 = false;
+					Move(camera, deltaTime, 3.0f, DIR_DOWN);
+				}
+			} else {
 				flag2 = false;
-				flag4 = false;
-				Move(camera, deltaTime, 3.0f, DIR_LEFT);
+				previousPlanePos = plane.PlanePos;
 			}
-		} else {
-			flag3 = false;
-			previousPlanePos = plane.PlanePos;
+			KeysProcessed[GLFW_KEY_DOWN] = true;
 		}
-		KeysProcessed[GLFW_KEY_LEFT] = true;
-	}
-	if (flag4 || Keys[GLFW_KEY_RIGHT] && !KeysProcessed[GLFW_KEY_RIGHT]) {
-		if (plane.PlanePos.x > previousPlanePos.x - 3.0f) {
-			if (plane.PlanePos.x > plane.InitialPlanePos.x - 3.0f) {
-				flag4 = true;
-				flag1 = false;
-				flag2 = false;
+		if (flag3 || Keys[GLFW_KEY_LEFT] && !KeysProcessed[GLFW_KEY_LEFT]) {
+			if (plane.PlanePos.x < previousPlanePos.x + 3.0f) {
+				if (plane.PlanePos.x < plane.InitialPlanePos.x + 3.0f) {
+					flag3 = true;
+					flag1 = false;
+					flag2 = false;
+					flag4 = false;
+					Move(camera, deltaTime, 3.0f, DIR_LEFT);
+				}
+			} else {
 				flag3 = false;
-				Move(camera, deltaTime, 3.0f, DIR_RIGHT);
+				previousPlanePos = plane.PlanePos;
 			}
-		} else {
-			flag4 = false;
-			previousPlanePos = plane.PlanePos;
+			KeysProcessed[GLFW_KEY_LEFT] = true;
 		}
-		KeysProcessed[GLFW_KEY_RIGHT] = true;
+		if (flag4 || Keys[GLFW_KEY_RIGHT] && !KeysProcessed[GLFW_KEY_RIGHT]) {
+			if (plane.PlanePos.x > previousPlanePos.x - 3.0f) {
+				if (plane.PlanePos.x > plane.InitialPlanePos.x - 3.0f) {
+					flag4 = true;
+					flag1 = false;
+					flag2 = false;
+					flag3 = false;
+					Move(camera, deltaTime, 3.0f, DIR_RIGHT);
+				}
+			} else {
+				flag4 = false;
+				previousPlanePos = plane.PlanePos;
+			}
+			KeysProcessed[GLFW_KEY_RIGHT] = true;
+		}
 	}
-}
 
 	// change game state
 	if (Keys[GLFW_KEY_ENTER] && !KeysProcessed[GLFW_KEY_ENTER]) {

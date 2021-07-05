@@ -36,6 +36,7 @@ bool enableCameraMovement = false;
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+float timer = 0.0f; // timer for debouncing issue
 
 // ImGUI state
 // ----------------------------------------------	
@@ -108,6 +109,7 @@ int main()
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+		timer += deltaTime;
 
 		// input
 		processInput(mainWindow, deltaTime);		
@@ -220,35 +222,34 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 
 	// store control input
-	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
-		planeGame.Keys[GLFW_KEY_UP] = true;
-		planeGame.KeysProcessed[GLFW_KEY_UP] = false;
-	}
-	else if (key == GLFW_KEY_UP && action == GLFW_RELEASE) {
-		planeGame.Keys[GLFW_KEY_UP] = false;		
-	}
+	if (timer >= 0.05) {
+		timer = 0.0f;
+		if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+			planeGame.Keys[GLFW_KEY_UP] = true;
+			planeGame.KeysProcessed[GLFW_KEY_UP] = false;
+		} else if (key == GLFW_KEY_UP && action == GLFW_RELEASE) {
+			planeGame.Keys[GLFW_KEY_UP] = false;
+		}
 
-	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
-		planeGame.Keys[GLFW_KEY_DOWN] = true;
-		planeGame.KeysProcessed[GLFW_KEY_DOWN] = false;
+		if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+			planeGame.Keys[GLFW_KEY_DOWN] = true;
+			planeGame.KeysProcessed[GLFW_KEY_DOWN] = false;
+		} else if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
+			planeGame.Keys[GLFW_KEY_DOWN] = false;
+		}
+
+		if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+			planeGame.Keys[GLFW_KEY_LEFT] = true;
+			planeGame.KeysProcessed[GLFW_KEY_LEFT] = false;
+		} else if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
+			planeGame.Keys[GLFW_KEY_LEFT] = false;
+		}
+
+		if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+			planeGame.Keys[GLFW_KEY_RIGHT] = true;
+			planeGame.KeysProcessed[GLFW_KEY_RIGHT] = false;
+		} else if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
+			planeGame.Keys[GLFW_KEY_RIGHT] = false;
+		}
 	}
-	else if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
-		planeGame.Keys[GLFW_KEY_DOWN] = false;		
-	}
-	
-	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
-		planeGame.Keys[GLFW_KEY_LEFT] = true;
-		planeGame.KeysProcessed[GLFW_KEY_LEFT] = false;
-	}
-	else if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
-		planeGame.Keys[GLFW_KEY_LEFT] = false;		
-	}
-	
-	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
-		planeGame.Keys[GLFW_KEY_RIGHT] = true;
-		planeGame.KeysProcessed[GLFW_KEY_RIGHT] = false;
-	}
-	else if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
-		planeGame.Keys[GLFW_KEY_RIGHT] = false;		
-	}	
 }
