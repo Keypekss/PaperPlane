@@ -298,11 +298,11 @@ bool flag4 = false;
 void Game::ProcessInput(float deltaTime, Camera& camera)
 {
 	// move plane and camera forward
-	if (State == START) {
-		plane.PlanePos.y -= 5.0f * deltaTime;
-		plane.CBoxPos.z -= 5.0f * deltaTime;
-		camera.Position.z -= 5.0f * deltaTime;
-	}
+// 	if (State == START) {
+// 		plane.PlanePos.y -= 5.0f * deltaTime;
+// 		plane.CBoxPos.z -= 5.0f * deltaTime;
+// 		camera.Position.z -= 5.0f * deltaTime;
+// 	}
 	// plane controls	
 	{		
 		if (flag1 || Keys[GLFW_KEY_UP] && !KeysProcessed[GLFW_KEY_UP]) {
