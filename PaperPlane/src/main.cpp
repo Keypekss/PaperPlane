@@ -41,17 +41,12 @@ float timer = 0.0f; // timer for debouncing issue
 // ImGUI state
 // ----------------------------------------------	
 ImVec4 clearColor = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
-// paperPlane
-glm::vec3	PRotAxis	= glm::vec3(1.0f, 0.0f, 0.0f);
-float		PRotAngle	= 180;
-glm::vec3	PTranslate	= glm::vec3(1.0f);
-// camera
-float		CRotYaw		= 0.0f;
-float		CRotPitch	= 0.0f;
-glm::vec3	CTranslate	= glm::vec3(0.0f);
 
 // game
 Game planeGame = Game();
+
+// settings
+bool AntiAliasing = true;
 
 int main()
 {
@@ -60,10 +55,10 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_SAMPLES, 8);
 
 	//window creation
-	GLFWwindow* mainWindow = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGLDemo", nullptr, nullptr);
+	GLFWwindow* mainWindow = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Plane Game", nullptr, nullptr);
 	if (mainWindow == nullptr) {
 		std::cout << "Failed to create window." << std::endl;
 		glfwTerminate();
@@ -87,8 +82,8 @@ int main()
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_MULTISAMPLE); // x4MSAA
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
+	glfwSwapInterval(0); // disable vsync
 
 	// initialize ImGUI
 	IMGUI_CHECKVERSION();
@@ -113,26 +108,33 @@ int main()
 		lastFrame = currentFrame;
 		timer += deltaTime;
 
-		// input
-		processInput(mainWindow, deltaTime);		
+		if (AntiAliasing) 			
+			glEnable(GL_MULTISAMPLE); // x8MSAA
+		else
+			glDisable(GL_MULTISAMPLE);
 
+		processInput(mainWindow, deltaTime);
 		planeGame.Update(deltaTime, camera, mainWindow);
+
 
 		// ImGui
 		// ----------------------------------------------	
 		{			
-			ImGui::Begin("Transformations");   
+			ImGui::Begin("Settings");   
 
-			// translate mirror
-			ImGui::SliderFloat3("PaperPlane ", glm::value_ptr(planeGame.plane.CBoxPos), -10.0f, 10.0f);
+// 			// translate mirror
+// 			ImGui::SliderFloat3("PaperPlane ", glm::value_ptr(planeGame.plane.CBoxPos), -10.0f, 10.0f);
+// 
+// 			// translate camera
+// 			ImGui::SliderFloat3("CTranslate ", glm::value_ptr(CTranslate), -25.0f, 25.0f);
+// 			ImGui::SliderFloat("CRotYaw ", &CRotYaw, -90.0f, 90.0f);
+// 			ImGui::SliderFloat("CRotPitch ", &CRotPitch, -90.0f, 90.0f);
+// 
+// 
+// 			ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color	
 
-			// translate camera
-			ImGui::SliderFloat3("CTranslate ", glm::value_ptr(CTranslate), -25.0f, 25.0f);
-			ImGui::SliderFloat("CRotYaw ", &CRotYaw, -90.0f, 90.0f);
-			ImGui::SliderFloat("CRotPitch ", &CRotPitch, -90.0f, 90.0f);
+			ImGui::Checkbox("8xMSAA", &AntiAliasing);      // Edit bools storing our window open/close state
 
-
-			ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color			
 
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
@@ -213,10 +215,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	
 	// update camera
-	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
-		camera.Position = CTranslate;
-		camera.ProcessMouseMovement(CRotYaw, CRotPitch);
-	}
+// 	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
+// 		camera.Position = CTranslate;
+// 		camera.ProcessMouseMovement(CRotYaw, CRotPitch);
+// 	}
 	
 	if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
 		planeGame.Keys[GLFW_KEY_ENTER] = true;
